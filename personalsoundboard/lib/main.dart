@@ -64,6 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   dynamic _localPath() async {
+    if(isPlaying) {
+      audioPlayer.stop();
+    }
     final file = new File('${(await getTemporaryDirectory()).path}/roald.mp3');
     await file.writeAsBytes((await loadAsset()).buffer.asUint8List());
     final result = await audioPlayer.play(file.path, isLocal: true);
@@ -124,18 +127,21 @@ Future<Null> _askedToLead() async {
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
-          title: const Text('Select assignment'),
+          title: const Text('Upload audio fragment'),
           children: <Widget>[
             new Form(
               key: _formKey,
               child:
               new TextFormField(
                 decoration: new InputDecoration(
-                  hintText: 'Please enter a search title'
+                  hintText: 'Title'
                 ),
                 validator: (value) {
                   if (value.isEmpty) {
                     return 'Please enter the title';
+                  }
+                  else {
+                    print(value);
                   }
                 },
               )
@@ -143,8 +149,7 @@ Future<Null> _askedToLead() async {
             ),
             new SimpleDialogOption(
               onPressed: () { if (_formKey.currentState.validate()) {
-                Scaffold.of(context).showSnackBar(
-                    new SnackBar(content: new Text('Processing Data')));
+                Navigator.pop(context, Department.title);
                 }
               },
               child: const Text('Next'),
