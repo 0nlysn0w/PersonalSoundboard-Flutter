@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:audioplayer/audioplayer.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'sqflite_connection.dart';
 
 enum PlayerState { stopped, playing, paused }
 enum Department { title, image, audio }
@@ -121,7 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 Future<Null> _askedToLead() async {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
+  var db = new SQFLiteConnect();
+  int idm = 0;
+  String title = "";
   switch (
     await showDialog<Department>(
       context: context,
@@ -141,7 +144,7 @@ Future<Null> _askedToLead() async {
                     return 'Please enter the title';
                   }
                   else {
-                    print(value);
+                    title = value;
                   }
                 },
               )
@@ -168,8 +171,8 @@ Future<Null> _askedToLead() async {
     )
   ) {
     case Department.title:
-      // Let's go.
-      // ...
+    print(title);
+    idm = await db.insertIntoTable(title);
     break;
     case Department.image:
       // ...
