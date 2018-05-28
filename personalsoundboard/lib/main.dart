@@ -1,8 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:audioplayer/audioplayer.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum PlayerState { stopped, playing, paused }
+enum Department { title, image, audio }
 
 void main() => runApp(new MyApp());
 
@@ -49,13 +54,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-
   void initState() {
     super.initState();
     initAudioPlayer();
   }
-  int _counter = 0;
   
+  Future<ByteData> loadAsset() async {
+      return await rootBundle.load('sounds/roald.mp3');
+  }
+
+  dynamic _localPath() async {
+    final file = new File('${(await getTemporaryDirectory()).path}/roald.mp3');
+    await file.writeAsBytes((await loadAsset()).buffer.asUint8List());
+    final result = await audioPlayer.play(file.path, isLocal: true);
+    if (result == 1) {
+       setState(() => playerState = PlayerState.playing);
+    }
+  }
+
   PlayerState playerState = PlayerState.stopped;
   AudioPlayer audioPlayer;
   
@@ -74,24 +90,13 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
   }
-  
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+
 
   void _playSound(final path) async {
     final result = await audioPlayer.play(path);
     print(result);
     if (result == 1) {
        setState(() => playerState = PlayerState.playing);
-      _incrementCounter();
     }
   }
 
@@ -110,6 +115,66 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+
+Future<Null> _askedToLead() async {
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
+  switch (
+    await showDialog<Department>(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          title: const Text('Select assignment'),
+          children: <Widget>[
+            new Form(
+              key: _formKey,
+              child:
+              new TextFormField(
+                decoration: new InputDecoration(
+                  hintText: 'Please enter a search title'
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter the title';
+                  }
+                },
+              )
+              ,
+            ),
+            new SimpleDialogOption(
+              onPressed: () { if (_formKey.currentState.validate()) {
+                Scaffold.of(context).showSnackBar(
+                    new SnackBar(content: new Text('Processing Data')));
+                }
+              },
+              child: const Text('Next'),
+            ),
+            new SimpleDialogOption(
+              onPressed: () { Navigator.pop(context, Department.image); },
+              child: const Text('State department'),
+            ),
+            new SimpleDialogOption(
+              onPressed: () { Navigator.pop(context, Department.audio); },
+              child: const Text('State department'),
+            ),
+          ],
+        );
+      }
+    )
+  ) {
+    case Department.title:
+      // Let's go.
+      // ...
+    break;
+    case Department.image:
+      // ...
+    break;
+    case Department.audio:
+      // ...
+    break;
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -127,31 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: new Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        // child: new Column(
-        //   // Column is also layout widget. It takes a list of children and
-        //   // arranges them vertically. By default, it sizes itself to fit its
-        //   // children horizontally, and tries to be as tall as its parent.
-        //   //
-        //   // Invoke "debug paint" (press "p" in the console where you ran
-        //   // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-        //   // window in IntelliJ) to see the wireframe for each widget.
-        //   //
-        //   // Column has various properties to control how it sizes itself and
-        //   // how it positions its children. Here we use mainAxisAlignment to
-        //   // center the children vertically; the main axis here is the vertical
-        //   // axis because Columns are vertical (the cross axis would be
-        //   // horizontal).
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: <Widget>[
-        //     new Text(
-        //       'You have pushed the button this many times:',
-        //     ),
-        //     new Text(
-        //       '$_counter',
-        //       style: Theme.of(context).textTheme.display1,
-        //     ),
-        //   ],
-        // ),      
         child: new Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -164,7 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
               new RaisedButton(
                 child: new Text('2', textAlign: TextAlign.center),
                 onPressed: () {
-                  _getSound("http://www.rxlabz.com/labz/audio.mp3");
+                  // _getSound("http://www.rxlabz.com/labz/audio.mp3");
+                  _localPath();
                 },
               ),
               new Expanded(
@@ -179,10 +220,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          _getSound("");
+          _askedToLead();
         },
         tooltip: 'Increment',
-        child: new Icon(Icons.headset),
+        child: new Icon(Icons.add_box),
       ), // This trailing comma makes auto-formatting nicer for build methods.
 
     );
