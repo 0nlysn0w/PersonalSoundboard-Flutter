@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:audioplayer/audioplayer.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'audioplayer.dart';
 import 'sqflite_connection.dart';
 
 enum PlayerState { stopped, playing, paused }
@@ -19,14 +16,6 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'PersonalSoundboard',
       theme: new ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-        // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: new MyHomePage(title: 'PersonalSoundboard'),
@@ -57,72 +46,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    initAudioPlayer();
+    AudioplayerRamon.initAudioPlayer();
   }
   
-  Future<ByteData> loadAsset() async {
-      return await rootBundle.load('sounds/roald.mp3');
-  }
-
-  dynamic _localPath() async {
-    if(isPlaying) {
-      audioPlayer.stop();
-    }
-    final file = new File('${(await getTemporaryDirectory()).path}/roald.mp3');
-    await file.writeAsBytes((await loadAsset()).buffer.asUint8List());
-    final result = await audioPlayer.play(file.path, isLocal: true);
-    if (result == 1) {
-       setState(() => playerState = PlayerState.playing);
-    }
-  }
-
-  PlayerState playerState = PlayerState.stopped;
-  AudioPlayer audioPlayer;
   
-  get isPlaying => playerState == PlayerState.playing;
-  get isPaused => playerState == PlayerState.paused;
 
-  void initAudioPlayer() {
-    audioPlayer = new AudioPlayer();
-    audioPlayer.setCompletionHandler(() {
-      _onComplete();
-    });
-
-    audioPlayer.setErrorHandler((msg) {
-      setState(() {
-        _onComplete();
-      });
-    });
-  }
-
-
-  void _playSound(final path) async {
-    final result = await audioPlayer.play(path);
-    if (result == 1) {
-       setState(() => playerState = PlayerState.playing);
-    }
-  }
-
-  void _getSound(final path) async {
-    if (isPlaying) {
-      await audioPlayer.stop();
-      _playSound(path);
-    } else {
-      _playSound(path);
-    }
-  }
-
-  void _onComplete() {
-    setState(() {
-          playerState = PlayerState.stopped;
-        });
-  }
-
-
-Future<Null> _askedToLead() async {
+//Dialog
+Future<Null> _addSound() async {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   var db = new SQFLiteConnect();
-  int idm = 0;
   String title = "";
   switch (
     await showDialog<Department>(
@@ -156,21 +88,13 @@ Future<Null> _askedToLead() async {
               },
               child: const Text('Next'),
             ),
-            // new SimpleDialogOption(
-            //   onPressed: () { Navigator.pop(context, Department.image); },
-            //   child: const Text('State department'),
-            // ),
-            // new SimpleDialogOption(
-            //   onPressed: () { Navigator.pop(context, Department.audio); },
-            //   child: const Text('State department'),
-            // ),
           ],
         );
       }
     )
   ) {
     case Department.title:
-    idm = await db.insertIntoTable(title);
+    await db.insertIntoTable(title);
     break;
     case Department.image:
       // ...
@@ -204,14 +128,14 @@ Future<Null> _askedToLead() async {
               new RaisedButton(
                 child: new Text('1', textAlign: TextAlign.center),
                 onPressed: () {
-                  _getSound("http://www.rxlabz.com/labz/audio.mp3");
+                  AudioplayerRamon.getSound("http://www.rxlabz.com/labz/audio.mp3");
                 },
               ),
               new RaisedButton(
                 child: new Text('2', textAlign: TextAlign.center),
                 onPressed: () {
                   // _getSound("http://www.rxlabz.com/labz/audio.mp3");
-                  _localPath();
+                  AudioplayerRamon.localPath();
                 },
               ),
               new Expanded(
@@ -226,7 +150,7 @@ Future<Null> _askedToLead() async {
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          _askedToLead();
+          _addSound();
         },
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),

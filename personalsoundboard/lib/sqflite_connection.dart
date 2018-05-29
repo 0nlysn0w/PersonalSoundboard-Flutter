@@ -26,8 +26,6 @@ class SQFLiteConnect{
 
     maps["title"] = title;
     final m = _db.insert("DBLSounds", maps);
-    var henk = await _db.query("DBLSounds");
-    print(henk);
     return m;
   }
 
