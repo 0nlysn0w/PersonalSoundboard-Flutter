@@ -98,7 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _playSound(final path) async {
     final result = await audioPlayer.play(path);
-    print(result);
     if (result == 1) {
        setState(() => playerState = PlayerState.playing);
     }
@@ -157,21 +156,20 @@ Future<Null> _askedToLead() async {
               },
               child: const Text('Next'),
             ),
-            new SimpleDialogOption(
-              onPressed: () { Navigator.pop(context, Department.image); },
-              child: const Text('State department'),
-            ),
-            new SimpleDialogOption(
-              onPressed: () { Navigator.pop(context, Department.audio); },
-              child: const Text('State department'),
-            ),
+            // new SimpleDialogOption(
+            //   onPressed: () { Navigator.pop(context, Department.image); },
+            //   child: const Text('State department'),
+            // ),
+            // new SimpleDialogOption(
+            //   onPressed: () { Navigator.pop(context, Department.audio); },
+            //   child: const Text('State department'),
+            // ),
           ],
         );
       }
     )
   ) {
     case Department.title:
-    print(title);
     idm = await db.insertIntoTable(title);
     break;
     case Department.image:
@@ -206,7 +204,7 @@ Future<Null> _askedToLead() async {
               new RaisedButton(
                 child: new Text('1', textAlign: TextAlign.center),
                 onPressed: () {
-                  _getSound("http://www.rxlabz.com/labz/audio2.mp3");
+                  _getSound("http://www.rxlabz.com/labz/audio.mp3");
                 },
               ),
               new RaisedButton(

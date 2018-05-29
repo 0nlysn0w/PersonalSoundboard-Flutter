@@ -26,7 +26,21 @@ class SQFLiteConnect{
 
     maps["title"] = title;
     final m = _db.insert("DBLSounds", maps);
+    var henk = await _db.query("DBLSounds");
+    print(henk);
     return m;
+  }
+
+  Future<List<Map<String, dynamic>>> getSounds() async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          "CREATE TABLE DBLSounds (id INTEGER PRIMARY KEY, title TEXT, image BLOB, sound BLOB);"
+        );
+      }
+    );
+    var result = await _db.query("DBLSounds");
+    return result;
   }
 
 }
