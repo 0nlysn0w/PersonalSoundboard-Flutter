@@ -4,6 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import './content_page.dart';
+import '../utils/drawer.dart';
+
 class GroupPage extends StatefulWidget {
   @override
   GroupPageState createState() => new GroupPageState();
@@ -11,9 +14,9 @@ class GroupPage extends StatefulWidget {
 
 class GroupPageState extends State<GroupPage> {
 
-  List data;
+  List groups;
 
-  Future<String> getData() async {
+  Future<String> getGroups() async {
     http.Response response = await http.get(
       Uri.encodeFull("http://jooststam.com/soundboard/api.php/groups"),
       headers: {
@@ -22,14 +25,14 @@ class GroupPageState extends State<GroupPage> {
     );
 
     this.setState(() {
-      data = JSON.decode(response.body);
+      groups = JSON.decode(response.body);
     });
-    print(data[1]["name"]);
+    return "Succes!";
   }
 
   @override
   void initState() {
-    this.getData();
+    this.getGroups();
   }
 
   @override
@@ -39,23 +42,28 @@ class GroupPageState extends State<GroupPage> {
         title: new Text("Groups"),
       ),
       body: new ListView.builder(
-        itemCount: data == null ? 0 : data.length,
+        itemCount: groups == null ? 0 : groups.length,
         itemBuilder: (BuildContext context, int index) {
           return new Container(
             margin: const EdgeInsets.only(top: 5.0),
             child: new Card(
               child: new ListTile(
-                leading: avatar(data[index]["name"]),
-                title: new Text(data[index]["name"]),
+                onTap: () => debugPrint(groups[index]["name"]),
+                leading: avatar(groups[index]["name"]),
+                title: new Text(groups[index]["name"]),
               )
             )
           );
         }
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => debugPrint("Add"),
+        onPressed: () {
+          Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage()),
+          );
+        },
         child: new Icon(Icons.add_circle),
       ),
+      drawer: new TestDrawer(),
     );
   }
 
