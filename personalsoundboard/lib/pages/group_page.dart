@@ -35,6 +35,7 @@ class GroupPageState extends State<GroupPage> {
     this.getGroups();
   }
 
+  String _id;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -48,7 +49,18 @@ class GroupPageState extends State<GroupPage> {
             margin: const EdgeInsets.only(top: 5.0),
             child: new Card(
               child: new ListTile(
-                onTap: () => debugPrint(groups[index]["name"]),
+                onTap: () {
+                  setState(() {
+                      _id = groups[index]["id"];
+                  });
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index]["id"])));
+                  
+                  final snackBar = new SnackBar(
+                    content: new Text(groups[index]["id"]),
+                  );
+
+                  Scaffold.of(context).showSnackBar(snackBar);
+                },
                 leading: avatar(groups[index]["name"]),
                 title: new Text(groups[index]["name"]),
               )
@@ -58,8 +70,7 @@ class GroupPageState extends State<GroupPage> {
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage()),
-          );
+          //Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage()));
         },
         child: new Icon(Icons.add_circle),
       ),

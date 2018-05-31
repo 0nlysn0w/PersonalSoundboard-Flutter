@@ -4,18 +4,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import './addcontent_page.dart';
+
 class ContentPage extends StatefulWidget {
+  ContentPage(this.id);
+  final String id;
+
   @override
-  ContentPageState createState() => new ContentPageState();
+  ContentPageState createState() => new ContentPageState(id);
 }
 
 class ContentPageState extends State<ContentPage> {
-
+    ContentPageState(this.id);
+    final String id;
     List content;
 
   Future<String> getContent() async {
     http.Response response = await http.get(
-      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content"),
+      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?id=" + id),
       headers: {
         "Accept": "application/json"
       }
@@ -37,6 +43,14 @@ class ContentPageState extends State<ContentPage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Content"),
+        actions: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.add_circle_outline),
+            onPressed: () {
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(id)));
+            },
+          )
+        ],
       ),
       body: new GridView.builder(
         itemCount: content == null ? 0 : content.length,
