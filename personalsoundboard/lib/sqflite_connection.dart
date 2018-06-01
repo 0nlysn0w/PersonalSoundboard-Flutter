@@ -7,7 +7,32 @@ import 'package:sqflite/sqflite.dart';
 
 class SQFLiteConnect{
 
-  SQFLiteConnect();
+  SQFLiteConnect() {
+    // connectDatabase();
+  }
+
+  // void connectDatabase() async {
+  //   _db = await openDatabase(await connectionstring(), version: 1,
+  //     onCreate: (Database db, int version) async {
+  //       await db.execute(
+  //         onCreateDb
+  //       );
+  //     }
+  //   );
+  //   deletedatabase();    
+  // }
+
+  void deletedatabase() async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+    _db.execute("delete from DBLSounds;");
+  }
+
   Future<String> connectionstring() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "sounds.db");
@@ -18,10 +43,11 @@ class SQFLiteConnect{
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          "CREATE TABLE DBLSounds (id INTEGER PRIMARY KEY, title TEXT, image BLOB, sound BLOB);"
+          onCreateDb
         );
       }
     );
+
     Map<String, dynamic> maps = new Map<String, dynamic>();
 
     maps["title"] = title;
@@ -33,7 +59,7 @@ class SQFLiteConnect{
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          "CREATE TABLE DBLSounds (id INTEGER PRIMARY KEY, title TEXT, image BLOB, sound BLOB);"
+          onCreateDb
         );
       }
     );
@@ -41,4 +67,7 @@ class SQFLiteConnect{
     return result;
   }
 
+  get onCreateDb {
+    return "CREATE TABLE DBLSounds (id INTEGER PRIMARY KEY, title TEXT, image BLOB, sound BLOB);";
+  }
 }

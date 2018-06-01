@@ -47,66 +47,131 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     AudioplayerRamon.initAudioPlayer();
+    // buttonsRows();
+    gridviewthing();
   }
   
+  Widget row;
   
 
-//Dialog
-Future<Null> _addSound() async {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  var db = new SQFLiteConnect();
-  String title = "";
-  switch (
-    await showDialog<Department>(
-      context: context,
-      builder: (BuildContext context) {
-        return new SimpleDialog(
-          title: const Text('Upload audio fragment'),
-          children: <Widget>[
-            new Form(
-              key: _formKey,
-              child:
-              new TextFormField(
-                decoration: new InputDecoration(
-                  hintText: 'Title'
-                ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter the title';
-                  }
-                  else {
-                    title = value;
+  //Dialog
+  Future<Null> _addSound() async {
+    final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+    var db = new SQFLiteConnect();
+    String title = "";
+    switch (
+      await showDialog<Department>(
+        context: context,
+        builder: (BuildContext context) {
+          return new SimpleDialog(
+            title: const Text('Upload audio fragment'),
+            children: <Widget>[
+              new Form(
+                key: _formKey,
+                child:
+                new TextFormField(
+                  decoration: new InputDecoration(
+                    hintText: 'Title'
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter the title';
+                    }
+                    else {
+                      title = value;
+                    }
+                  },
+                )
+                ,
+              ),
+              new SimpleDialogOption(
+                onPressed: () { if (_formKey.currentState.validate()) {
+                  Navigator.pop(context, Department.title);
                   }
                 },
-              )
-              ,
-            ),
-            new SimpleDialogOption(
-              onPressed: () { if (_formKey.currentState.validate()) {
-                Navigator.pop(context, Department.title);
-                }
-              },
-              child: const Text('Next'),
-            ),
-          ],
-        );
-      }
-    )
-  ) {
-    case Department.title:
-    await db.insertIntoTable(title);
-    break;
-    case Department.image:
-      // ...
-    break;
-    case Department.audio:
-      // ...
-    break;
+                child: const Text('Next'),
+              ),
+            ],
+          );
+        }
+      )
+    ) {
+      case Department.title:
+      await db.insertIntoTable(title);
+      // db.deletedatabase();
+      gridviewthing();
+      break;
+      case Department.image:
+        // ...
+      break;
+      case Department.audio:
+        // ...
+      break;
+    }
   }
-}
+
+  List<Widget> declareButtons(List<Map<String, dynamic>> sounds) {
+    List<Widget> buttons = new List<Widget>();
+
+    for (var element in sounds) {
+      var button = new RaisedButton(
+        child: new Text(element["title"]),
+        onPressed: () {AudioplayerRamon.localPath();},
+      );
+      buttons.add(button);
+    }
+
+    return buttons;
+  }
+  void buttonsRows() async {
+    SQFLiteConnect _db = new SQFLiteConnect();
+    // _db.deletedatabase();
+    List<Map<String, dynamic>> sounds = await _db.getSounds();
+    var meep = declareButtons(sounds);
+    row = new Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        meep.first,
+        meep.last
+      ]
+    );
+    setState(() {});
+  }
+
+  void gridviewthing() async {
+    SQFLiteConnect _db = new SQFLiteConnect();
+    // _db.deletedatabase();
+    List<Map<String, dynamic>> sounds = await _db.getSounds();
+    // var meep = declareButtons(sounds);
+    row = new GridView.builder(
+      itemCount: sounds.length,
+      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+      itemBuilder: (BuildContext builder, int index){
+        return new Card(
+          child: new GridTile(
+            child: 
+            new InkResponse(
+              child:new Text(sounds[index]["title"]),
+              onTap: () {
+                  //Now to add audio
+                  if ((index % 2) == 0 ) {
+                    AudioplayerRamon.localPath();
+                  } else {
+                    AudioplayerRamon.localPathTheo();
+                  }
+                },
+            ),
+          ),
+        );
+      },
+    );
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -119,35 +184,38 @@ Future<Null> _addSound() async {
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
       ),
-      body: new Center(
+      body: row,
+      // new Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: new Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-              new RaisedButton(
-                child: new Text('1', textAlign: TextAlign.center),
-                onPressed: () {
-                  AudioplayerRamon.getSound("http://www.rxlabz.com/labz/audio.mp3");
-                },
-              ),
-              new RaisedButton(
-                child: new Text('2', textAlign: TextAlign.center),
-                onPressed: () {
-                  // _getSound("http://www.rxlabz.com/labz/audio.mp3");
-                  AudioplayerRamon.localPath();
-                },
-              ),
-              new Expanded(
-                child: new FittedBox(
-                  fit: BoxFit.contain, // otherwise the logo will be tiny
-                  child: const FlutterLogo(),
-                ),
-              ),
-            ],
+        // child: new Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: <Widget>[
+              // new RaisedButton(
+              //   child: new Text('1', textAlign: TextAlign.center),
+              //   onPressed: () {
+              //     // AudioplayerRamon.getSound("http://www.rxlabz.com/labz/audio.mp3");
+              //     AudioplayerRamon.localPath();
+              //   },
+              // ),
+              // new RaisedButton(
+              //   child: new Text('2', textAlign: TextAlign.center),
+              //   onPressed: () {
+              //     // _getSound("http://www.rxlabz.com/labz/audio.mp3");
+              //     AudioplayerRamon.localPathTheo();
+              //   },
+              // ),
+              // new Expanded(
+              //   child: new FittedBox(
+              //     fit: BoxFit.contain, // otherwise the logo will be tiny
+              //     child: const FlutterLogo(),
+              //   ),
+              // ),
+        //     ],
+        // child: row
 
-      ),
-      ),
+      // ),
+      // ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
           _addSound();
