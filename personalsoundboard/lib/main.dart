@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'audioplayer.dart';
+import 'audiorecord.dart';
 import 'sqflite_connection.dart';
+
+import 'package:simple_permissions/simple_permissions.dart';
 
 enum PlayerState { stopped, playing, paused }
 enum Department { title, image, audio }
@@ -49,13 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
     AudioplayerRamon.initAudioPlayer();
     // buttonsRows();
     gridviewthing();
+    SimplePermissions.requestPermission(Permission.RecordAudio);
   }
   
   Widget row;
   
 
   //Dialog
-  Future<Null> _addSound() async {
+  Future<Null> _addTitle() async {
     final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
     var db = new SQFLiteConnect();
     String title = "";
@@ -97,52 +101,19 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     ) {
       case Department.title:
-      await db.insertIntoTable(title);
+      String id = await db.insertIntoTable(title);
       // db.deletedatabase();
-      gridviewthing();
-      break;
-      case Department.image:
-        // ...
-      break;
-      case Department.audio:
-        // ...
+      // gridviewthing();
+      row = new AppBody(id);
+      setState(() { });
       break;
     }
-  }
-
-  List<Widget> declareButtons(List<Map<String, dynamic>> sounds) {
-    List<Widget> buttons = new List<Widget>();
-
-    for (var element in sounds) {
-      var button = new RaisedButton(
-        child: new Text(element["title"]),
-        onPressed: () {AudioplayerRamon.localPath();},
-      );
-      buttons.add(button);
-    }
-
-    return buttons;
-  }
-  void buttonsRows() async {
-    SQFLiteConnect _db = new SQFLiteConnect();
-    // _db.deletedatabase();
-    List<Map<String, dynamic>> sounds = await _db.getSounds();
-    var meep = declareButtons(sounds);
-    row = new Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        meep.first,
-        meep.last
-      ]
-    );
-    setState(() {});
   }
 
   void gridviewthing() async {
     SQFLiteConnect _db = new SQFLiteConnect();
     // _db.deletedatabase();
     List<Map<String, dynamic>> sounds = await _db.getSounds();
-    // var meep = declareButtons(sounds);
     row = new GridView.builder(
       itemCount: sounds.length,
       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
@@ -153,12 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
             new InkResponse(
               child:new Text(sounds[index]["title"]),
               onTap: () {
+                print("Path=" + sounds[index]["sound"]);
                   //Now to add audio
-                  if ((index % 2) == 0 ) {
-                    AudioplayerRamon.localPath();
-                  } else {
-                    AudioplayerRamon.localPathTheo();
-                  }
+                  // if ((index % 2) == 0 ) {
+                    AudioplayerRamon.localPath(sounds[index]["sound"]);
+                  // } else {
+                    // AudioplayerRamon.localPathTheo();
+                  // }
                 },
             ),
           ),
@@ -218,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          _addSound();
+          _addTitle();
         },
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),

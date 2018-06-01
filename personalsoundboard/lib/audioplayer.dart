@@ -10,20 +10,24 @@ import 'main.dart';
 
 class AudioplayerRamon {
 
-  static Future<ByteData> loadAsset() async {
+  static Future<ByteData> loadAsset(path) async {
+    if (path != null || path.isEmpty) {
       return await rootBundle.load('sounds/roald.mp3');
+    } else {
+      return await rootBundle.load(path);
+    }
   }
 
     static Future<ByteData> loadAssetTheo() async {
       return await rootBundle.load('sounds/theo.mp3');
   }
 
-  static dynamic localPath() async {
+  static dynamic localPath(String path) async {
     if(isPlaying) {
       audioPlayer.stop();
     }
-    final file = new File('${(await getTemporaryDirectory()).path}/roald.mp3');
-    await file.writeAsBytes((await loadAsset()).buffer.asUint8List());
+    final file = path == null || path.isEmpty ? new File('${(await getTemporaryDirectory()).path}/roald.mp3') : new File(path);
+    await file.writeAsBytes((await loadAsset(path)).buffer.asUint8List());
     final result = await audioPlayer.play(file.path, isLocal: true);
     if (result == 1) {
        playerState = PlayerState.playing;

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -30,7 +31,7 @@ class SQFLiteConnect{
         );
       }
     );
-    _db.execute("delete from DBLSounds;");
+    _db.execute("DROP TABLE DBLSounds; " + onCreateDb);
   }
 
   Future<String> connectionstring() async {
@@ -39,7 +40,7 @@ class SQFLiteConnect{
     return path;
   }
 
-  Future<int> insertIntoTable(String title) async {
+  Future<String> insertIntoTable(String title) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -51,8 +52,9 @@ class SQFLiteConnect{
     Map<String, dynamic> maps = new Map<String, dynamic>();
 
     maps["title"] = title;
-    final m = _db.insert("DBLSounds", maps);
-    return m;
+    maps["id"] = generateId();
+    _db.insert("DBLSounds", maps);
+    return maps["id"];
   }
 
   Future<List<Map<String, dynamic>>> getSounds() async {
@@ -67,7 +69,32 @@ class SQFLiteConnect{
     return result;
   }
 
+  void insertSound(String path, String id) async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+    Map<String, dynamic> maps = new Map<String, dynamic>();
+    maps["sound"] = path;    
+    _db.update("DBLSounds", maps, where: "id == '" + id + "'");
+  }
+
+  static String generateId() {
+    int length = 10;
+    Random random = new Random();
+      String characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      String result = "";
+      for (int i = 0; i < length; i++)
+      {
+          result = result + characters[random.nextInt(characters.length)];
+      }
+      return result;
+  }
+
   get onCreateDb {
-    return "CREATE TABLE DBLSounds (id INTEGER PRIMARY KEY, title TEXT, image BLOB, sound BLOB);";
+    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image BLOB, sound TEXT);";
   }
 }
