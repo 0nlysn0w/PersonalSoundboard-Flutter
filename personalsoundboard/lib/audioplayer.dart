@@ -11,10 +11,11 @@ import 'main.dart';
 class AudioplayerRamon {
 
   static Future<ByteData> loadAsset(path) async {
-    if (path != null || path.isEmpty) {
+    if (path == null || path.isEmpty) {
       return await rootBundle.load('sounds/roald.mp3');
     } else {
-      return await rootBundle.load(path);
+      var m = await rootBundle.load(path);
+      return m;
     }
   }
 
@@ -27,7 +28,8 @@ class AudioplayerRamon {
       audioPlayer.stop();
     }
     final file = path == null || path.isEmpty ? new File('${(await getTemporaryDirectory()).path}/roald.mp3') : new File(path);
-    await file.writeAsBytes((await loadAsset(path)).buffer.asUint8List());
+    final meep = await loadAsset(path);
+    var meepe = await file.writeAsBytes(meep.buffer.asUint8List());
     final result = await audioPlayer.play(file.path, isLocal: true);
     if (result == 1) {
        playerState = PlayerState.playing;
