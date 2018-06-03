@@ -5,7 +5,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import 'package:image_picker/image_picker.dart';
-import '../utils/base62.dart' as randoms;
+import '../utils/helper.dart';
+
+import 'dart:math';
 
 
 class AddContentPage extends StatefulWidget {
@@ -31,18 +33,18 @@ class AddContentPageState extends State<AddContentPage> {
   }
 
   postContent(String name) {
-    // var client = new http.Client();
+    var base62 = new Helper().base62();
 
-    // client.post(
-    //   "http://jooststam.com/soundboard/api.php/content",
-    //   body: {
-    //     "id": "56gh",
-    //     "name": name,
-    //     "group_id": "fadgarg",
-    //     "type_id": "fgaf"
-    //   }
-    // ).whenComplete(client.close);
-    print("=>" + _random);
+    var client = new http.Client();
+    client.post(
+      "http://jooststam.com/soundboard/api.php/content",
+      body: {
+        "id": base62,
+        "name": name,
+        "group_id": "qwerty456",
+        "type_id": "1"
+      }
+    ).whenComplete(client.close);
   }
   
 
