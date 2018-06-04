@@ -16,7 +16,7 @@ class GroupPage extends StatefulWidget {
 
 class GroupPageState extends State<GroupPage> {
 
-  List<Group> groups;
+  List<Group> groups = new List<Group>();
 
   Future<String> getGroups() async {
     http.Response response = await http.get(
@@ -27,9 +27,19 @@ class GroupPageState extends State<GroupPage> {
     );
 
     this.setState(() {
-      Map groupMap = JSON.decode(response.body);
+      List groupsJson = JSON.decode(response.body);
+
+      for (var i = 0; i < groupsJson.length;) {
+        var group = new Group(groupsJson[i]["id"], groupsJson[i]["name"]);
+
+        // print(group.id + " --- " + group.name);
+        groups.add(group); 
+        // groups.insert(groups.length + 1, group);
+      }
+      groups = groups;
     });
-    return "Succes!";
+
+    return "Success!";
   }
 
   @override
