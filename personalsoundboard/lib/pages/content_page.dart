@@ -5,23 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './addcontent_page.dart';
+import '../utils/group.dart';
 
 class ContentPage extends StatefulWidget {
-  ContentPage(this.id);
-  final String id;
+  ContentPage(this.group);
+  final Group group;
 
   @override
-  ContentPageState createState() => new ContentPageState(id);
+  ContentPageState createState() => new ContentPageState(group);
 }
 
 class ContentPageState extends State<ContentPage> {
-    ContentPageState(this.id);
-    final String id;
+    ContentPageState(this.group);
+    final Group group;
     List content;
 
   Future<String> getContent() async {
     http.Response response = await http.get(
-      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?group_id=" + id),
+      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?group_id=" + group.id),
       headers: {
         "Accept": "application/json"
       }
@@ -47,7 +48,7 @@ class ContentPageState extends State<ContentPage> {
           new IconButton(
             icon: new Icon(Icons.add_circle_outline),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(id)));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(group)));
             },
           )
         ],

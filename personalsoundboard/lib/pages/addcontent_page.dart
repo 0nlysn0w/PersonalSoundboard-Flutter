@@ -5,22 +5,23 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import 'package:image_picker/image_picker.dart';
+import '../utils/group.dart';
 import '../utils/helper.dart';
 
 import 'dart:math';
 
 
 class AddContentPage extends StatefulWidget {
-  AddContentPage(this.id);
-  final String id;
+  AddContentPage(this.group);
+  final Group group;
 
   @override
-  AddContentPageState createState() => new AddContentPageState(id);
+  AddContentPageState createState() => new AddContentPageState(group);
 }
 
 class AddContentPageState extends State<AddContentPage> {
-  AddContentPageState(this.id);
-  final String id;
+  AddContentPageState(this.group);
+  final Group group;
   File _image;
 
   final myController = new TextEditingController();
@@ -41,7 +42,7 @@ class AddContentPageState extends State<AddContentPage> {
       body: {
         "id": base62,
         "name": name,
-        "group_id": "qwerty456",
+        "group_id": group.id,
         "type_id": "1"
       }
     ).whenComplete(client.close);
@@ -60,7 +61,7 @@ class AddContentPageState extends State<AddContentPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(id),
+        title: new Text(group.name),
       ),
       body: new Column(
         children: <Widget>[

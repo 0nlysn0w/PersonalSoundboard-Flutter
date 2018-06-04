@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import './content_page.dart';
+import './addgroup_page.dart';
 import '../utils/drawer.dart';
+import '../utils/group.dart';
 
 class GroupPage extends StatefulWidget {
   @override
@@ -14,7 +16,7 @@ class GroupPage extends StatefulWidget {
 
 class GroupPageState extends State<GroupPage> {
 
-  List groups;
+  List<Group> groups;
 
   Future<String> getGroups() async {
     http.Response response = await http.get(
@@ -25,7 +27,7 @@ class GroupPageState extends State<GroupPage> {
     );
 
     this.setState(() {
-      groups = JSON.decode(response.body);
+      Map groupMap = JSON.decode(response.body);
     });
     return "Succes!";
   }
@@ -41,6 +43,14 @@ class GroupPageState extends State<GroupPage> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Groups"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add_circle_outline),
+            onPressed: () {
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddGroupPage()));              
+            },
+          )
+        ],
       ),
       body: new ListView.builder(
         itemCount: groups == null ? 0 : groups.length,
@@ -51,18 +61,18 @@ class GroupPageState extends State<GroupPage> {
               child: new ListTile(
                 onTap: () {
                   setState(() {
-                      _id = groups[index]["id"];
+                      _id = groups[index].id;
                   });
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index]["id"])));
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
                   
                   final snackBar = new SnackBar(
-                    content: new Text(groups[index]["id"]),
+                    content: new Text(groups[index].id),
                   );
 
                   Scaffold.of(context).showSnackBar(snackBar);
                 },
-                leading: avatar(groups[index]["name"]),
-                title: new Text(groups[index]["name"]),
+                leading: avatar(groups[index].name),
+                title: new Text(groups[index].name),
               )
             )
           );
