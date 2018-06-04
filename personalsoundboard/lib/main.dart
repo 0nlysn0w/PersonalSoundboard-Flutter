@@ -104,7 +104,10 @@ class _MyHomePageState extends State<MyHomePage> {
       String id = await db.insertIntoTable(title);
       // db.deletedatabase();
       // gridviewthing();
-      row = new AppBody(id);
+      // row = new AppBody(id);
+            Navigator.of(context).push(
+              new MaterialPageRoute(builder: (context) => new AppBody(id)),
+            ).then((val)=>gridviewthing());
       setState(() { });
       break;
     }

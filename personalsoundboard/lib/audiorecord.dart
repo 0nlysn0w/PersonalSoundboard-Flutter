@@ -48,21 +48,31 @@ class AudiorecorderRamon extends State<AppBody> {
 
   @override
   Widget build(BuildContext context) {
-    return new Center(
-      child: new Padding(
-        padding: new EdgeInsets.all(8.0),
-        child: new Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              new FlatButton(onPressed: _isRecording ? null : _start, child: new Text("Start"), color: Colors.green,),
-              new FlatButton(onPressed: _isRecording ? _stop : null, child: new Text("Stop"), color: Colors.red,),
-              new Text("File path of the record: ${_recording.path}"),
-              new Text("Format: ${_recording.audioOutputFormat}"),
-              new Text("Extension : ${_recording.extension}"),
-              new Text("Audio recording duration : ${_recording.duration.toString()}" )
-            ]),
+    return new Scaffold(
+      appBar: new AppBar( 
+        title: new Text("Record audio"),
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back),
+          onPressed: (){Navigator.pop(context,true); print("back");}
+        ),
+
       ),
-    );
+      body: new Center(
+        child: new Padding(
+          padding: new EdgeInsets.all(8.0),
+          child: new Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                new FlatButton(onPressed: _isRecording ? null : _start, child: new Text("Start"), color: Colors.green,),
+                new FlatButton(onPressed: _isRecording ? _stop : null, child: new Text("Stop"), color: Colors.red,),
+                new Text("File path of the record: ${_recording.path}"),
+                new Text("Format: ${_recording.audioOutputFormat}"),
+                new Text("Extension : ${_recording.extension}"),
+                new Text("Audio recording duration : ${_recording.duration.toString()}" )
+              ]),
+        ),
+      ),
+      );
   } 
 
   _start() async {
