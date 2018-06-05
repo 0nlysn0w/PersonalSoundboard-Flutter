@@ -94,6 +94,16 @@ class SQFLiteConnect{
       return result;
   }
 
+  void deleteSound(String id) async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+    _db.delete("DBLSounds", where: "id == + '" + id + "'");
+  }
   get onCreateDb {
     return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image BLOB, sound TEXT);";
   }

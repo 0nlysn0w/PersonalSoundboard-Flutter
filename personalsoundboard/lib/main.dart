@@ -127,14 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
             new InkResponse(
               child:new Text(sounds[index]["title"]),
               onTap: () {
-                print("Path=" + sounds[index]["sound"]);
-                  //Now to add audio
-                  // if ((index % 2) == 0 ) {
-                    AudioplayerRamon.localPath(sounds[index]["sound"]);
-                  // } else {
-                    // AudioplayerRamon.localPathTheo();
-                  // }
+                  AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },
+              onLongPress: () {
+                _db.deleteSound(sounds[index]["id"]);
+                // gridviewthing();
+              },
             ),
           ),
         );
