@@ -65,23 +65,31 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
-          title: const Text('What would you like to do with this sound?'),
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          title: const Text('What would you like to do with this sound?', textAlign: TextAlign.center,),
           children: <Widget>[
             new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-
-              new SimpleDialogOption(
+            new Container(
+              padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              child: new SimpleDialogOption(
                 onPressed: () {
                   //db.deleteSound(id);
                 },
-                child: const Icon(Icons.delete),
+                child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
               ),
-            new SimpleDialogOption(
-              onPressed: () {
+            ),
+            new Container(
+              padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
 
-              },
-              child: const Icon(Icons.reply),
-            )],
+                },
+                child: const Icon(Icons.reply, size: 80.0, color: Colors.green,),
+              ),
+              )],
             )
           ],
         );
@@ -179,3 +187,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
