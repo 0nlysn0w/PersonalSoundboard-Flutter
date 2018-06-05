@@ -15,7 +15,7 @@ class GroupPage extends StatefulWidget {
 }
 
 class GroupPageState extends State<GroupPage> {
-
+  Widget body;
   List<Group> groups = new List<Group>();
 
   Future<String> getGroups() async {
@@ -27,23 +27,45 @@ class GroupPageState extends State<GroupPage> {
     );
 
     this.setState(() {
+      groups = new List<Group>();
       List groupsJson = JSON.decode(response.body);
 
-      for (var i = 0; i < groupsJson.length;) {
-        var group = new Group(groupsJson[i]["id"], groupsJson[i]["name"]);
-
-        // print(group.id + " --- " + group.name);
+      for (var json in groupsJson) {
+        var group = new Group(json["id"], json["name"]);
         groups.add(group); 
-        // groups.insert(groups.length + 1, group);
       }
-      groups = groups;
+      setGroups();
     });
 
     return "Success!";
   }
 
+  void setGroups() async {
+    body = new ListView.builder(
+      itemCount: groups == null ? 0 : groups.length,
+      itemBuilder: (BuildContext context, int index) {
+        return new Container(
+          margin: const EdgeInsets.only(top: 5.0),
+          child: new Card(
+            child: new ListTile(
+              onTap: () {
+                setState(() {
+                    _id = groups[index].id;
+                });
+                Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
+              },
+              leading: avatar(groups[index].name),
+              title: new Text(groups[index].name),
+            )
+          )
+        );
+      }
+    );
+  }
+
   @override
   void initState() {
+    super.initState();
     this.getGroups();
   }
 
@@ -54,51 +76,26 @@ class GroupPageState extends State<GroupPage> {
       appBar: new AppBar(
         title: new Text("Groups"),
         actions: <Widget>[
-          IconButton(
+          new IconButton(
+            icon: new Icon(Icons.refresh),
+            onPressed: () {
+              this.getGroups();
+            },
+          ),
+          new IconButton(
             icon: Icon(Icons.add_circle_outline),
             onPressed: () {
               Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddGroupPage()));              
             },
-          )
+          ),
         ],
       ),
-      body: new ListView.builder(
-        itemCount: groups == null ? 0 : groups.length,
-        itemBuilder: (BuildContext context, int index) {
-          return new Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: new Card(
-              child: new ListTile(
-                onTap: () {
-                  setState(() {
-                      _id = groups[index].id;
-                  });
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
-                  
-                  final snackBar = new SnackBar(
-                    content: new Text(groups[index].id),
-                  );
-
-                  Scaffold.of(context).showSnackBar(snackBar);
-                },
-                leading: avatar(groups[index].name),
-                title: new Text(groups[index].name),
-              )
-            )
-          );
-        }
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          //Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage()));
-        },
-        child: new Icon(Icons.add_circle),
-      ),
+      body: body,
       drawer: new TestDrawer(),
     );
   }
 
-    CircleAvatar avatar(String groupName) {
+  CircleAvatar avatar(String groupName) {
     return new CircleAvatar(
       backgroundColor: Colors.redAccent,
       child: new Text(groupName[0]),

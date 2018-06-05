@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/content.dart';
 import './addcontent_page.dart';
 import '../utils/group.dart';
 
@@ -16,9 +17,10 @@ class ContentPage extends StatefulWidget {
 }
 
 class ContentPageState extends State<ContentPage> {
-    ContentPageState(this.group);
-    final Group group;
-    List content;
+  ContentPageState(this.group);
+  final Group group;
+  List<Content> contents = new List<Content>();
+  Widget body;
 
   Future<String> getContent() async {
     http.Response response = await http.get(
@@ -26,25 +28,55 @@ class ContentPageState extends State<ContentPage> {
       headers: {
         "Accept": "application/json"
       }
+
     );
 
     this.setState(() {
-      content = JSON.decode(response.body);
+      contents = new List<Content>();
+      List contentJson = JSON.decode(response.body);
+
+      for (var json in contentJson) {
+        var content = new Content(json["id"], json["name"], json["group_id"], json["type_id"]);
+        contents.add(content); 
+      }
+      setContent();
     });
+
     return "Succes!";
+  }
+
+  void setContent() async {
+    body = new GridView.builder(
+        itemCount: contents == null ? 0 : contents.length,
+        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (4 == Orientation.portrait) ? 2 : 3),
+        itemBuilder: (BuildContext context, int index) {
+          return new Card(
+            child: new InkWell(
+              child: new Text(contents[index].name),
+              onTap: () => debugPrint("item pressed"),
+            ),
+          );
+        }
+      );
   }
 
   @override
   void initState() {
+    super.initState();    
     this.getContent();
   }
-
 
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Content"),
+        title: new Text("Content of " + group.name),
         actions: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.refresh),
+            onPressed: () {
+              this.getContent();
+            },
+          ),
           new IconButton(
             icon: new Icon(Icons.add_circle_outline),
             onPressed: () {
@@ -53,17 +85,19 @@ class ContentPageState extends State<ContentPage> {
           )
         ],
       ),
-      body: new GridView.builder(
-        itemCount: content == null ? 0 : content.length,
-        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (4 == Orientation.portrait) ? 2 : 3),
-        itemBuilder: (BuildContext context, int index) {
-          return new Card(
-            child: new InkWell(
-              onTap: () => debugPrint("item pressed"),
-            ),
-          );
-        }
-      )
+      body: body
+      // new GridView.builder(
+      //   itemCount: contents == null ? 0 : contents.length,
+      //   gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (4 == Orientation.portrait) ? 2 : 3),
+      //   itemBuilder: (BuildContext context, int index) {
+      //     return new Card(
+      //       child: new InkWell(
+      //         child: new Text(contents[index].name),
+      //         onTap: () => debugPrint("item pressed"),
+      //       ),
+      //     );
+      //   }
+      // )
     );
   }
 }
