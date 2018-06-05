@@ -7,25 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 
+import 'main.dart';
 import 'sqflite_connection.dart';
 
 class AppBody extends StatefulWidget{
-  String _id;
-  AppBody(String id) {
-    _id = id;
-  }
   @override
-  State<StatefulWidget> createState() => new AudiorecorderRamon(_id);
+  State<StatefulWidget> createState() => new AudiorecorderRamon();
 }
 
 class AudiorecorderRamon extends State<AppBody> {
   String _id = "";
   String _path = "";
   SQFLiteConnect _db;
-  AudiorecorderRamon(String id) { 
-    _id = id;
+  Color color;
+  AudiorecorderRamon() { 
+    _id = SQFLiteConnect.generateId();
     checkPerms();
     _db = new SQFLiteConnect();
+    color = new Color(0xFF000000);
   }
 
   void checkPerms() async{
@@ -53,27 +52,50 @@ class AudiorecorderRamon extends State<AppBody> {
         title: new Text("Record audio"),
         leading: new IconButton(
           icon: new Icon(Icons.arrow_back),
-          onPressed: (){Navigator.pop(context,true); print("back");}
+          onPressed: (){Navigator.pop(context,true);}
         ),
 
       ),
       body: new Center(
-        child: new Padding(
-          padding: new EdgeInsets.all(8.0),
-          child: new Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                new FlatButton(onPressed: _isRecording ? null : _start, child: new Text("Start"), color: Colors.green,),
-                new FlatButton(onPressed: _isRecording ? _stop : null, child: new Text("Stop"), color: Colors.red,),
-                new Text("File path of the record: ${_recording.path}"),
-                new Text("Format: ${_recording.audioOutputFormat}"),
-                new Text("Extension : ${_recording.extension}"),
-                new Text("Audio recording duration : ${_recording.duration.toString()}" )
-              ]),
-        ),
+        child: 
+        new IconButton(
+        onPressed: () {
+          _startStop();
+            // Navigator.push(
+            //   context,
+            //   new MaterialPageRoute(builder:  (context) => new PictureAndTitleScreen()),
+            // );
+        },
+        icon: new Icon(Icons.mic),
+        color: color,
+        iconSize: 250.0,
+        splashColor: Colors.redAccent[100],
+      ),
+        // new Padding(
+        //   padding: new EdgeInsets.all(8.0),
+        //   child: new Column(
+        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //       children: <Widget>[
+        //         new FlatButton(onPressed: _isRecording ? null : _start, child: new Text("Start"), color: Colors.green,),
+        //         new FlatButton(onPressed: _isRecording ? _stop : null, child: new Text("Stop"), color: Colors.red,),
+        //         new Text("File path of the record: ${_recording.path}"),
+        //         new Text("Format: ${_recording.audioOutputFormat}"),
+        //         new Text("Extension : ${_recording.extension}"),
+        //         new Text("Audio recording duration : ${_recording.duration.toString()}" )
+        //       ]),
+        // ),
       ),
       );
   } 
+  void _startStop() async {
+    if (!_isRecording) {
+      color = new Color(0xFFC62828);
+      _start();
+    } else {
+      color = new Color(0xFF000000);
+      _stop();
+    }
+  }
 
   _start() async {
     try {
@@ -100,7 +122,9 @@ class AudiorecorderRamon extends State<AppBody> {
       _isRecording = isRecording;
     });
     _controller.text = recording.path;
-    _db.insertSound(recording.path, _id);
+    _id = await _db.insertIntoTable(_id, recording.path);
+    Navigator.of(context).push(new MaterialPageRoute(builder:  (context) => new PictureAndTitleScreenBody(_id)));
+    
   }
 
 }

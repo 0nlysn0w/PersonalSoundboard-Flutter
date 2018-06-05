@@ -29,7 +29,7 @@ class AudioplayerRamon {
     }
     final file = path == null || path.isEmpty ? new File('${(await getTemporaryDirectory()).path}/roald.mp3') : new File(path);
     final meep = await loadAsset(path);
-    var meepe = await file.writeAsBytes(meep.buffer.asUint8List());
+    await file.writeAsBytes(meep.buffer.asUint8List());
     final result = await audioPlayer.play(file.path, isLocal: true);
     if (result == 1) {
        playerState = PlayerState.playing;

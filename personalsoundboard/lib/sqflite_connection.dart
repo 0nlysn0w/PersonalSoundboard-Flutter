@@ -40,7 +40,7 @@ class SQFLiteConnect{
     return path;
   }
 
-  Future<String> insertIntoTable(String title) async {
+  Future<String> insertIntoTable(String id, String audioPath) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -51,8 +51,8 @@ class SQFLiteConnect{
 
     Map<String, dynamic> maps = new Map<String, dynamic>();
 
-    maps["title"] = title;
     maps["id"] = generateId();
+    maps["sound"] = audioPath;
     _db.insert("DBLSounds", maps);
     return maps["id"];
   }
@@ -69,7 +69,7 @@ class SQFLiteConnect{
     return result;
   }
 
-  void insertSound(String path, String id) async {
+  void insertTitleAndImage(String id, String path, String title) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -78,7 +78,7 @@ class SQFLiteConnect{
       }
     );
     Map<String, dynamic> maps = new Map<String, dynamic>();
-    maps["sound"] = path;    
+    maps["title"] = title;    
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
   }
 

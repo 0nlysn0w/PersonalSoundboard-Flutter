@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'audioplayer.dart';
@@ -6,6 +7,8 @@ import 'audiorecord.dart';
 import 'sqflite_connection.dart';
 
 import 'package:simple_permissions/simple_permissions.dart';
+import 'package:image_picker/image_picker.dart';
+
 
 enum PlayerState { stopped, playing, paused }
 enum Department { title, image, audio }
@@ -101,13 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     ) {
       case Department.title:
-      String id = await db.insertIntoTable(title);
+      // String id = await db.insertIntoTable(title);
       // db.deletedatabase();
       // gridviewthing();
       // row = new AppBody(id);
-            Navigator.of(context).push(
-              new MaterialPageRoute(builder: (context) => new AppBody(id)),
-            ).then((val)=>gridviewthing());
+            // Navigator.of(context).push(
+            //   new MaterialPageRoute(builder: (context) => new AppBody(id)),
+            // ).then((val)=>gridviewthing());
       setState(() { });
       break;
     }
@@ -191,12 +194,107 @@ class _MyHomePageState extends State<MyHomePage> {
       // ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          _addTitle();
+          // _addTitle();
+          Navigator.of(context).push(
+              new MaterialPageRoute(builder: (context) => new AppBody()),
+            ).then((val)=>gridviewthing());
         },
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),
       ), // This trailing comma makes auto-formatting nicer for build methods.
 
+    );
+  }
+}
+
+class PictureAndTitleScreenBody extends StatefulWidget{
+  String _id;
+  PictureAndTitleScreenBody(String id) {
+    _id = id;
+  }
+  @override
+  State<StatefulWidget> createState() => new PictureAndTitleScreen(_id);
+}
+
+
+class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
+  File image;
+  String _id = "";
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  String title;
+  SQFLiteConnect _db = new SQFLiteConnect();
+  PictureAndTitleScreen(String id) {
+    _id = id;
+  }
+  picker() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    print(img.path);
+    setState(() {
+      image = img;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(''),
+      ),
+    body: new Wrap(
+      children: <Widget>[
+        image == null?new Center(
+          child: new IconButton(
+              icon: new Icon(Icons.add_photo_alternate),
+              iconSize: 300.0,
+              color: Colors.green,
+              onPressed: () {
+                picker();
+              },
+            ),
+        ):
+    
+      new Center(
+        child:new InkResponse(child: new Image.file(image), onTap: () {picker();},),
+      
+      ),
+
+      new Center(
+        child: new Form(
+          key: _formKey,
+          child:
+            new TextFormField(
+            textAlign: TextAlign.center,
+            autofocus: false,
+            maxLength: 30,
+            autocorrect: false,
+            decoration: new InputDecoration(
+              hintText: 'Enter title here',
+              border:  new OutlineInputBorder(
+              )
+            ),
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Please enter the title';
+              }
+              else {
+                title = value;
+              }
+            },
+          ),
+        ),
+      
+      ),
+      new Center(
+        child: new RaisedButton(
+          onPressed: () {
+            _db.insertTitleAndImage(_id, image.path, title);
+          },
+          child: new Text("Save"),
+        ),
+      )
+    ]
+    )
     );
   }
 }
