@@ -6,11 +6,13 @@ dependencies:
     sdk: flutter
     
   audio_recorder:
-  audioplayer:
+  audioplayer: ^0.4.0
   path_provider:
   sqflite: any
   image_picker:
   image:
+  firebase_database: ^0.4.1
+  firebase_core: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
