@@ -59,58 +59,36 @@ class _MyHomePageState extends State<MyHomePage> {
   
 
   //Dialog
-  Future<Null> _addTitle() async {
-    final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  Future<Null> _soundOptions(String id) async {
     var db = new SQFLiteConnect();
-    String title = "";
-    switch (
-      await showDialog<Department>(
-        context: context,
-        builder: (BuildContext context) {
-          return new SimpleDialog(
-            title: const Text('Upload audio fragment'),
+    await showDialog<Department>(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          title: const Text('What would you like to do with this sound?'),
+          children: <Widget>[
+            new Row(
             children: <Widget>[
-              new Form(
-                key: _formKey,
-                child:
-                new TextFormField(
-                  decoration: new InputDecoration(
-                    hintText: 'Title'
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter the title';
-                    }
-                    else {
-                      title = value;
-                    }
-                  },
-                )
-                ,
-              ),
+
               new SimpleDialogOption(
-                onPressed: () { if (_formKey.currentState.validate()) {
-                  Navigator.pop(context, Department.title);
-                  }
+                onPressed: () {
+                  //db.deleteSound(id);
                 },
-                child: const Text('Next'),
+                child: const Icon(Icons.delete),
               ),
-            ],
-          );
-        }
-      )
-    ) {
-      case Department.title:
-      String id = await db.insertIntoTable(title);
-      // db.deletedatabase();
-      // gridviewthing();
-      // row = new AppBody(id);
-            Navigator.of(context).push(
-              new MaterialPageRoute(builder: (context) => new AppBody(id)),
-            ).then((val)=>gridviewthing());
-      setState(() { });
-      break;
-    }
+            new SimpleDialogOption(
+              onPressed: () {
+
+              },
+              child: const Icon(Icons.reply),
+            )],
+            )
+          ],
+        );
+      }
+    );
+    setState(() { });
+
   }
 
   void gridviewthing() async {
@@ -130,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },
               onLongPress: () {
-                _db.deleteSound(sounds[index]["id"]);
+                _soundOptions(sounds[index]["id"]);
+               // _db.deleteSound(sounds[index]["id"]);
                 // gridviewthing();
               },
             ),
@@ -191,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          _addTitle();
+          // _addTitle();
         },
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),
