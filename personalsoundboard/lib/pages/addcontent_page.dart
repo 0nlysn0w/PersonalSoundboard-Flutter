@@ -42,7 +42,7 @@ class AddContentPageState extends State<AddContentPage> {
       body: {
         "id": base62,
         "name": name,
-        "group_id": group.id,
+        "group_id": group.key,
         "type_id": "1"
       }
     ).whenComplete(client.close);

@@ -9,6 +9,9 @@ import './addgroup_page.dart';
 import '../utils/drawer.dart';
 import '../utils/group.dart';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+
 class GroupPage extends StatefulWidget {
   @override
   GroupPageState createState() => new GroupPageState();
@@ -16,7 +19,12 @@ class GroupPage extends StatefulWidget {
 
 class GroupPageState extends State<GroupPage> {
   Widget body;
-  List<Group> groups = new List<Group>();
+  List<Group> groups = new List();
+  Group group;
+
+  DatabaseReference groupRef;
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Future<String> getGroups() async {
     http.Response response = await http.get(
@@ -31,42 +39,21 @@ class GroupPageState extends State<GroupPage> {
       List groupsJson = JSON.decode(response.body);
 
       for (var json in groupsJson) {
-        var group = new Group(json["id"], json["name"]);
+        var group = new Group(json["name"]);
         groups.add(group); 
       }
-      setGroups();
     });
 
     return "Success!";
   }
 
-  void setGroups() async {
-    body = new ListView.builder(
-      itemCount: groups == null ? 0 : groups.length,
-      itemBuilder: (BuildContext context, int index) {
-        return new Container(
-          margin: const EdgeInsets.only(top: 5.0),
-          child: new Card(
-            child: new ListTile(
-              onTap: () {
-                setState(() {
-                    _id = groups[index].id;
-                });
-                Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
-              },
-              leading: avatar(groups[index].name),
-              title: new Text(groups[index].name),
-            )
-          )
-        );
-      }
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    this.getGroups();
+    //group = Group("");
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    groupRef = database.reference().child('group');
   }
 
   String _id;
@@ -77,12 +64,6 @@ class GroupPageState extends State<GroupPage> {
         title: new Text("Groups"),
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.refresh),
-            onPressed: () {
-              this.getGroups();
-            },
-          ),
-          new IconButton(
             icon: Icon(Icons.add_circle_outline),
             onPressed: () {
               Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddGroupPage()));              
@@ -90,7 +71,27 @@ class GroupPageState extends State<GroupPage> {
           ),
         ],
       ),
-      body: body,
+      body: new FirebaseAnimatedList(
+        query: groupRef,
+        itemBuilder: (BuildContext context, DataSnapshot snapshot, 
+            Animation<double> animation, int index) {
+          return new Container(
+            margin: const EdgeInsets.only(top: 5.0),
+            child: new Card(
+              child: new ListTile(
+                // onTap: () {
+                //   setState(() {
+                //       _id = groups[index].id;
+                //   });
+                //   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
+                // },
+                leading: avatar(groups[index].name),
+                title: new Text(groups[index].name),
+              )
+            )
+          );
+        }
+      ),
       drawer: new TestDrawer(),
     );
   }

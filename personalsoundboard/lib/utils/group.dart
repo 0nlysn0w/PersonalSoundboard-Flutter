@@ -1,6 +1,19 @@
-class Group {
-   final String id;
-   final String name;
+import 'package:firebase_database/firebase_database.dart';
 
-  Group(this.id, this.name);
+class Group {
+   String key;
+   String name;
+
+  Group(this.name);
+
+  Group.fromSnapshot(DataSnapshot snapshot)
+        : key = snapshot.key,
+          name = snapshot.value["name"];
+          
+  toJson() {
+    return {
+      //"key": key,
+      "name": name,
+    };
+  }
 }

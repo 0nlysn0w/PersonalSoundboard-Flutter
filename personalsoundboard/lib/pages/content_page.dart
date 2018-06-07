@@ -24,7 +24,7 @@ class ContentPageState extends State<ContentPage> {
 
   Future<String> getContent() async {
     http.Response response = await http.get(
-      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?group_id=" + group.id),
+      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?group_id="),
       headers: {
         "Accept": "application/json"
       }

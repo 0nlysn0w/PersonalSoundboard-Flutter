@@ -4,9 +4,15 @@ import 'dart:async';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import '../utils/group.dart';
 import '../utils/helper.dart';
 
 import 'dart:math';
+
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+
+import 'group_page.dart';
 
 
 class AddGroupPage extends StatefulWidget {
@@ -15,29 +21,47 @@ class AddGroupPage extends StatefulWidget {
 }
 
 class AddGroupPageState extends State<AddGroupPage> {
+  List<Group> groups = new List<Group>();
+  Group group;
+  DatabaseReference groupRef;
 
-  postGroup(String name) {
-    var base62 = new Helper().base62();
-
-    var client = new http.Client();
-    client.post(
-      "http://jooststam.com/soundboard/api.php/groups",
-      body: {
-        "id": base62,
-        "name": name
-      }
-    ).whenComplete(client.close);
-  }
-
-  final groupNameInputField = new TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();  
 
   @override
-  void dispose() {
-    // Clean up the controller when the Widget is disposed
-    groupNameInputField.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    group = Group("");
+
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    groupRef = database.reference().child('group');
+    groupRef.onChildAdded.listen(_onEntryAdded);
+    groupRef.onChildChanged.listen(_onEntryChanged);
   }
 
+    _onEntryAdded(Event event) {
+    setState(() {
+      groups.add(Group.fromSnapshot(event.snapshot));
+    });
+  }
+
+  _onEntryChanged(Event event) {
+    var old = groups.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      groups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
+    });
+  }
+
+  void handleSubmit() {
+    final FormState form = formKey.currentState;
+
+    if (form.validate()) {
+      form.save();
+      form.reset();
+      groupRef.push().set(group.toJson());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,27 +71,27 @@ class AddGroupPageState extends State<AddGroupPage> {
       ),
       body: new Column(
         children: <Widget>[
-          new ListTile(
-            leading: const Icon(Icons.description),
-            title: new TextField(
-              controller: groupNameInputField,
-              decoration: new InputDecoration(
-                hintText: "GroupName",
+          new Form(
+            key: formKey,
+            child: 
+            new ListTile(
+              leading: const Icon(Icons.description),
+              title: new TextFormField(
+                onSaved: (val) => group.name = val,
+                validator: (val) => val == "" ? val : null,
+                decoration: new InputDecoration(
+                  hintText: "GroupName",
+                ),
               ),
             ),
-          ),
-          // new Card(
-            
-          //   child: _image == null
-          //   ? new RaisedButton(
-          //     onPressed: getImage,
-          //     child: new Icon(Icons.add))
-          //   : new Image.file(_image)
-          // )
+          )
         ],
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => postGroup(groupNameInputField.text),
+        onPressed: () {
+          handleSubmit();
+          Navigator.push(context, new MaterialPageRoute(builder: (context) => new GroupPage()));
+        },
         child: new Icon(Icons.check_circle)
       ),
     );
