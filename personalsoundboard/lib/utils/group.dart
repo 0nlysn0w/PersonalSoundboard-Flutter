@@ -12,7 +12,6 @@ class Group {
           
   toJson() {
     return {
-      //"key": key,
       "name": name,
     };
   }

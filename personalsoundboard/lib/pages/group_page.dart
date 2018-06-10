@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import './content_page.dart';
 import './addgroup_page.dart';
@@ -25,27 +21,6 @@ class GroupPageState extends State<GroupPage> {
   DatabaseReference groupRef;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  Future<String> getGroups() async {
-    http.Response response = await http.get(
-      Uri.encodeFull("http://jooststam.com/soundboard/api.php/groups"),
-      headers: {
-        "Accept": "application/json"
-      }
-    );
-
-    this.setState(() {
-      groups = new List<Group>();
-      List groupsJson = JSON.decode(response.body);
-
-      for (var json in groupsJson) {
-        var group = new Group(json["name"]);
-        groups.add(group); 
-      }
-    });
-
-    return "Success!";
-  }
 
   @override
   void initState() {
@@ -73,7 +48,6 @@ class GroupPageState extends State<GroupPage> {
     });
   }
 
-  String _id;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -96,12 +70,9 @@ class GroupPageState extends State<GroupPage> {
             margin: const EdgeInsets.only(top: 5.0),
             child: new Card(
               child: new ListTile(
-                // onTap: () {
-                //   setState(() {
-                //       _id = groups[index].id;
-                //   });
-                //   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
-                // },
+                onTap: () {
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
+                },
                 leading: avatar(groups[index].name),
                 title: new Text(groups[index].name),
               )

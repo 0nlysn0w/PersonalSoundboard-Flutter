@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'dart:async';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-
 import '../utils/group.dart';
 import '../utils/helper.dart';
-
-import 'dart:math';
-
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-
 import 'group_page.dart';
 
+import 'package:firebase_database/firebase_database.dart';
 
 class AddGroupPage extends StatefulWidget {
   @override
@@ -25,7 +16,7 @@ class AddGroupPageState extends State<AddGroupPage> {
   Group group;
   DatabaseReference groupRef;
 
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();  
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -38,7 +29,7 @@ class AddGroupPageState extends State<AddGroupPage> {
     groupRef.onChildChanged.listen(_onEntryChanged);
   }
 
-    _onEntryAdded(Event event) {
+  _onEntryAdded(Event event) {
     setState(() {
       groups.add(Group.fromSnapshot(event.snapshot));
     });
@@ -59,7 +50,7 @@ class AddGroupPageState extends State<AddGroupPage> {
     if (form.validate()) {
       form.save();
       form.reset();
-      groupRef.push().set(group.toJson());
+      groupRef.child(Helper().base62()).set(group.toJson());
     }
   }
 
@@ -73,8 +64,7 @@ class AddGroupPageState extends State<AddGroupPage> {
         children: <Widget>[
           new Form(
             key: formKey,
-            child: 
-            new ListTile(
+            child: new ListTile(
               leading: const Icon(Icons.description),
               title: new TextFormField(
                 onSaved: (val) => group.name = val,
@@ -88,12 +78,12 @@ class AddGroupPageState extends State<AddGroupPage> {
         ],
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          handleSubmit();
-          Navigator.push(context, new MaterialPageRoute(builder: (context) => new GroupPage()));
-        },
-        child: new Icon(Icons.check_circle)
-      ),
+          onPressed: () {
+            handleSubmit();
+            Navigator.push(context,
+                new MaterialPageRoute(builder: (context) => new GroupPage()));
+          },
+          child: new Icon(Icons.check_circle)),
     );
   }
 }

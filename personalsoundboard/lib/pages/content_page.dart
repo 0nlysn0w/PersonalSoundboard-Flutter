@@ -1,12 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '../utils/content.dart';
 import './addcontent_page.dart';
 import '../utils/group.dart';
+
+import 'package:firebase_database/firebase_database.dart';
 
 class ContentPage extends StatefulWidget {
   ContentPage(this.group);
@@ -18,52 +16,38 @@ class ContentPage extends StatefulWidget {
 
 class ContentPageState extends State<ContentPage> {
   ContentPageState(this.group);
-  final Group group;
-  List<Content> contents = new List<Content>();
-  Widget body;
+  
+  Group group;
+  
+  List<Content> contents = new List();
+  Content content;
 
-  Future<String> getContent() async {
-    http.Response response = await http.get(
-      Uri.encodeFull("http://jooststam.com/soundboard/api.php/content?group_id="),
-      headers: {
-        "Accept": "application/json"
-      }
-
-    );
-
-    this.setState(() {
-      contents = new List<Content>();
-      List contentJson = JSON.decode(response.body);
-
-      for (var json in contentJson) {
-        var content = new Content(json["id"], json["name"], json["group_id"], json["type_id"]);
-        contents.add(content); 
-      }
-      setContent();
-    });
-
-    return "Succes!";
-  }
-
-  void setContent() async {
-    body = new GridView.builder(
-        itemCount: contents == null ? 0 : contents.length,
-        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (4 == Orientation.portrait) ? 2 : 3),
-        itemBuilder: (BuildContext context, int index) {
-          return new Card(
-            child: new InkWell(
-              child: new Text(contents[index].name),
-              onTap: () => debugPrint("item pressed"),
-            ),
-          );
-        }
-      );
-  }
+  DatabaseReference contentRef;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();    
-    this.getContent();
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    contentRef = database.reference().child('content');
+    contentRef.equalTo(group.key);
+    contentRef.onChildAdded.listen(_onEntryAdded);
+    contentRef.onChildChanged.listen(_onEntryChanged);
+  }
+
+    _onEntryAdded(Event event) {
+    setState(() {
+      contents.add(Content.fromSnapshot(event.snapshot));
+    });
+  }
+
+  _onEntryChanged(Event event) {
+    var old = contents.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      contents[contents.indexOf(old)] = Content.fromSnapshot(event.snapshot);
+    });
   }
 
   Widget build(BuildContext context) {
@@ -72,12 +56,6 @@ class ContentPageState extends State<ContentPage> {
         title: new Text("Content of " + group.name),
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.refresh),
-            onPressed: () {
-              this.getContent();
-            },
-          ),
-          new IconButton(
             icon: new Icon(Icons.add_circle_outline),
             onPressed: () {
               Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(group)));
@@ -85,19 +63,23 @@ class ContentPageState extends State<ContentPage> {
           )
         ],
       ),
-      body: body
-      // new GridView.builder(
-      //   itemCount: contents == null ? 0 : contents.length,
-      //   gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: (4 == Orientation.portrait) ? 2 : 3),
-      //   itemBuilder: (BuildContext context, int index) {
-      //     return new Card(
-      //       child: new InkWell(
-      //         child: new Text(contents[index].name),
-      //         onTap: () => debugPrint("item pressed"),
-      //       ),
-      //     );
-      //   }
-      // )
+      body: new GridView.extent(
+          children: _cardGridBuilder(contents.length), 
+          maxCrossAxisExtent: 180.0,
+        )
     );
+  }
+
+  List<Widget> _cardGridBuilder(numberOfContents) {
+    List<Card> cards = new List<Card>.generate(numberOfContents, 
+    (int index) {
+      return new Card(
+        child: new InkWell(
+          child: new Text(contents[index].name),
+          onTap: () => debugPrint("item pressed"),
+        ),
+      );
+    });
+    return cards;
   }
 }

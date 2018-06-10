@@ -1,11 +1,26 @@
-import 'dart:io';
+import 'package:firebase_database/firebase_database.dart';
+import 'helper.dart';
 
 class Content {
-   final String id;
-   final String name;
-   final String groupId;
-   final String typeId;
+   String key;
+   String name;
+   String group;
+   String type;
 
-  Content(this.id, this.name, this.groupId, this.typeId);
+  Content(this.name, this.group, this.type);
+
+  Content.fromSnapshot(DataSnapshot snapshot)
+        : key = snapshot.key,
+          name = snapshot.value["name"],
+          group = snapshot.value["group"],
+          type = snapshot.value["type"];
+          
+  toJson() {
+    return {
+      "name": Helper().base62(),
+      "group": group,
+      "type": type
+    };
+  }
 
 }
