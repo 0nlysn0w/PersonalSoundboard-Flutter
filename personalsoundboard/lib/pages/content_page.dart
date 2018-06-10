@@ -65,7 +65,7 @@ class ContentPageState extends State<ContentPage> {
       ),
       body: new GridView.extent(
           children: _cardGridBuilder(contents.length), 
-          maxCrossAxisExtent: 180.0,
+          maxCrossAxisExtent: 120.0,
         )
     );
   }

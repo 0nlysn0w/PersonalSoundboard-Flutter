@@ -17,7 +17,7 @@ class Content {
           
   toJson() {
     return {
-      "name": Helper().base62(),
+      "name": name,
       "group": group,
       "type": type
     };
