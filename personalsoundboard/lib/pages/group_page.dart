@@ -50,10 +50,27 @@ class GroupPageState extends State<GroupPage> {
   @override
   void initState() {
     super.initState();
-    //group = Group("");
+    group = Group("");
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     groupRef = database.reference().child('group');
+    groupRef.onChildAdded.listen(_onEntryAdded);
+    groupRef.onChildChanged.listen(_onEntryChanged);
+  }
+
+    _onEntryAdded(Event event) {
+    setState(() {
+      groups.add(Group.fromSnapshot(event.snapshot));
+    });
+  }
+
+  _onEntryChanged(Event event) {
+    var old = groups.singleWhere((entry) {
+      return entry.key == event.snapshot.key;
+    });
+    setState(() {
+      groups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
+    });
   }
 
   String _id;
