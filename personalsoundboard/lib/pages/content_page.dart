@@ -47,8 +47,9 @@ class ContentPageState extends State<ContentPage> {
       return entry.key == event.snapshot.key;
     });
     setState(() {
-      contents[contents.indexOf(old)] = Content.fromSnapshot(event.snapshot);
-      contents = contents.where((c) => c.group == group.key);
+      List<Content> unfilteredcontents = List();
+      unfilteredcontents[contents.indexOf(old)] = Content.fromSnapshot(event.snapshot);
+      contents = unfilteredcontents.where((c) => c.group == group.key);
     });
   }
 

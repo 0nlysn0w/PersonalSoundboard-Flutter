@@ -109,7 +109,7 @@ class AddContentPageState extends State<AddContentPage> {
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pop(
                 context,
                 new MaterialPageRoute(
                     builder: (context) => new ContentPage(group)));

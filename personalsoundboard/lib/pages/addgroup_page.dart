@@ -80,7 +80,7 @@ class AddGroupPageState extends State<AddGroupPage> {
       floatingActionButton: new FloatingActionButton(
           onPressed: () {
             handleSubmit();
-            Navigator.push(context,
+            Navigator.pop(context,
                 new MaterialPageRoute(builder: (context) => new GroupPage()));
           },
           child: new Icon(Icons.check_circle)),
