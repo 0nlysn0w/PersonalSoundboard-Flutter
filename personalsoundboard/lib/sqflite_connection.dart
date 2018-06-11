@@ -69,7 +69,7 @@ class SQFLiteConnect{
     return result;
   }
 
-  void insertTitleAndImage(String id, String path, String title) async {
+  void insertTitleAndImage(String id, String title, [String path]) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -78,7 +78,10 @@ class SQFLiteConnect{
       }
     );
     Map<String, dynamic> maps = new Map<String, dynamic>();
-    maps["title"] = title;    
+    maps["title"] = title;  
+    if (path != null) {
+      maps["image"] = path;    
+    }  
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
   }
 
@@ -105,6 +108,6 @@ class SQFLiteConnect{
     _db.delete("DBLSounds", where: "id == + '" + id + "'");
   }
   get onCreateDb {
-    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image BLOB, sound TEXT);";
+    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT);";
   }
 }

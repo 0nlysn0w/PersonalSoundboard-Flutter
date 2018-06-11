@@ -123,8 +123,12 @@ class AudiorecorderRamon extends State<AppBody> {
     });
     _controller.text = recording.path;
     _id = await _db.insertIntoTable(_id, recording.path);
-    Navigator.of(context).push(new MaterialPageRoute(builder:  (context) => new PictureAndTitleScreenBody(_id)));
+    Navigator.of(context).push(new MaterialPageRoute(builder:  (context) => new PictureAndTitleScreenBody(_id))).then((val) => redirectback());
     
+  }
+
+  void redirectback() {
+    Navigator.pop(context);
   }
 
 }

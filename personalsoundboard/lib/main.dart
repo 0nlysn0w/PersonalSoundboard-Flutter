@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: new GridTile(
             child: 
             new InkResponse(
-              child:new Text(sounds[index]["title"]),
+              child:new Text(sounds[index]["title"] == null ?"text": sounds[index]["title"]),
               onTap: () {
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },
@@ -274,6 +274,7 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
               )
             ),
             validator: (value) {
+              print(value);
               if (value.isEmpty) {
                 return 'Please enter the title';
               }
@@ -288,7 +289,10 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
       new Center(
         child: new RaisedButton(
           onPressed: () {
-            _db.insertTitleAndImage(_id, image.path, title);
+            if(_formKey.currentState.validate()) {
+              _db.insertTitleAndImage(_id,  title, image==null? null : image.path);
+              Navigator.pop(context);
+            }
           },
           child: new Text("Save"),
         ),
