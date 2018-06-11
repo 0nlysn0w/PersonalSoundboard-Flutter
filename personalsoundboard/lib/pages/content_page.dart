@@ -38,6 +38,7 @@ class ContentPageState extends State<ContentPage> {
     _onEntryAdded(Event event) {
     setState(() {
       contents.add(Content.fromSnapshot(event.snapshot));
+      contents = contents.where((c) => c.group == group.key).toList();
     });
   }
 
@@ -47,6 +48,7 @@ class ContentPageState extends State<ContentPage> {
     });
     setState(() {
       contents[contents.indexOf(old)] = Content.fromSnapshot(event.snapshot);
+      contents = contents.where((c) => c.group == group.key);
     });
   }
 
