@@ -35,7 +35,7 @@ class AddContentPageState extends State<AddContentPage> {
   @override
   void initState() {
     super.initState();
-    content = Content("", "", "");
+    content = Content("", "", "", "");
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     contentRef = database.reference().child('content');

@@ -21,7 +21,7 @@ class AddGroupPageState extends State<AddGroupPage> {
   @override
   void initState() {
     super.initState();
-    group = Group("");
+    group = Group("", "");
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     groupRef = database.reference().child('group');

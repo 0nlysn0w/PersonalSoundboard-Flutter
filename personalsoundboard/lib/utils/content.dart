@@ -1,25 +1,27 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'helper.dart';
 
 class Content {
    String key;
    String name;
    String group;
    String type;
+   String cover;
 
-  Content(this.name, this.group, this.type);
+  Content(this.name, this.group, this.type, this.cover);
 
   Content.fromSnapshot(DataSnapshot snapshot)
         : key = snapshot.key,
           name = snapshot.value["name"],
           group = snapshot.value["group"],
-          type = snapshot.value["type"];
+          type = snapshot.value["type"],
+          cover = snapshot.value["cover"];
           
   toJson(String group) {
     return {
       "name": name,
       "group": group,
-      "type": type
+      "type": type,
+      "cover": cover
     };
   }
 
