@@ -104,13 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     ) {
       case Department.title:
-      // String id = await db.insertIntoTable(title);
-      // db.deletedatabase();
-      // gridviewthing();
-      // row = new AppBody(id);
-            // Navigator.of(context).push(
-            //   new MaterialPageRoute(builder: (context) => new AppBody(id)),
-            // ).then((val)=>gridviewthing());
+
       setState(() { });
       break;
     }
@@ -118,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void gridviewthing() async {
     SQFLiteConnect _db = new SQFLiteConnect();
-    // _db.deletedatabase();
     List<Map<String, dynamic>> sounds = await _db.getSounds();
     row = new GridView.builder(
       itemCount: sounds.length,
@@ -134,7 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               onLongPress: () {
                 _db.deleteSound(sounds[index]["id"]);
-                // gridviewthing();
               },
             ),
           ),
@@ -161,40 +153,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: row,
-      // new Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        // child: new Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: <Widget>[
-              // new RaisedButton(
-              //   child: new Text('1', textAlign: TextAlign.center),
-              //   onPressed: () {
-              //     // AudioplayerRamon.getSound("http://www.rxlabz.com/labz/audio.mp3");
-              //     AudioplayerRamon.localPath();
-              //   },
-              // ),
-              // new RaisedButton(
-              //   child: new Text('2', textAlign: TextAlign.center),
-              //   onPressed: () {
-              //     // _getSound("http://www.rxlabz.com/labz/audio.mp3");
-              //     AudioplayerRamon.localPathTheo();
-              //   },
-              // ),
-              // new Expanded(
-              //   child: new FittedBox(
-              //     fit: BoxFit.contain, // otherwise the logo will be tiny
-              //     child: const FlutterLogo(),
-              //   ),
-              // ),
-        //     ],
-        // child: row
-
-      // ),
-      // ),
+      
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
-          // _addTitle();
           Navigator.of(context).push(
               new MaterialPageRoute(builder: (context) => new AppBody()),
             ).then((val)=>gridviewthing());

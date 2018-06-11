@@ -59,33 +59,16 @@ class AudiorecorderRamon extends State<AppBody> {
       body: new Center(
         child: 
         new IconButton(
-        onPressed: () {
-          _startStop();
-            // Navigator.push(
-            //   context,
-            //   new MaterialPageRoute(builder:  (context) => new PictureAndTitleScreen()),
-            // );
-        },
-        icon: new Icon(Icons.mic),
-        color: color,
-        iconSize: 250.0,
-        splashColor: Colors.redAccent[100],
+          onPressed: () {
+            _startStop();
+          },
+          icon: new Icon(Icons.mic),
+          color: color,
+          iconSize: 250.0,
+          splashColor: Colors.redAccent[100],
+        ),
       ),
-        // new Padding(
-        //   padding: new EdgeInsets.all(8.0),
-        //   child: new Column(
-        //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //       children: <Widget>[
-        //         new FlatButton(onPressed: _isRecording ? null : _start, child: new Text("Start"), color: Colors.green,),
-        //         new FlatButton(onPressed: _isRecording ? _stop : null, child: new Text("Stop"), color: Colors.red,),
-        //         new Text("File path of the record: ${_recording.path}"),
-        //         new Text("Format: ${_recording.audioOutputFormat}"),
-        //         new Text("Extension : ${_recording.extension}"),
-        //         new Text("Audio recording duration : ${_recording.duration.toString()}" )
-        //       ]),
-        // ),
-      ),
-      );
+    );
   } 
   void _startStop() async {
     if (!_isRecording) {
