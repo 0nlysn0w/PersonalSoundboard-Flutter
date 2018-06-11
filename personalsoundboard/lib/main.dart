@@ -53,7 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     AudioplayerRamon.initAudioPlayer();
-    // buttonsRows();
     gridviewthing();
     SimplePermissions.requestPermission(Permission.RecordAudio);
   }
@@ -136,6 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void _addSounds() async {
+    final m = await Navigator.of(context).push(
+        new MaterialPageRoute(builder: (context) => new AppBody()),
+      ).whenComplete(() =>
+        gridviewthing()
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,11 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: row,
       
       floatingActionButton: new FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-              new MaterialPageRoute(builder: (context) => new AppBody()),
-            ).then((val)=>gridviewthing());
-        },
+        onPressed: _addSounds,
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -250,10 +252,7 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
       new Center(
         child: new RaisedButton(
           onPressed: () {
-            if(_formKey.currentState.validate()) {
-              _db.insertTitleAndImage(_id,  title, image==null? null : image.path);
-              Navigator.pop(context);
-            }
+              _insertIntoDb();
           },
           child: new Text("Save"),
         ),
@@ -261,5 +260,14 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
     ]
     )
     );
+  }
+
+  _insertIntoDb() async {
+    if(_formKey.currentState.validate()) {
+      var m = await _db.insertTitleAndImage(_id,  title, image==null? null : image.path);
+      if (m) {
+        Navigator.pop(context, "meep 2");
+      }
+    }
   }
 }

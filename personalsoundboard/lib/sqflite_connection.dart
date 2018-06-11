@@ -69,7 +69,7 @@ class SQFLiteConnect{
     return result;
   }
 
-  void insertTitleAndImage(String id, String title, [String path]) async {
+  Future<bool> insertTitleAndImage(String id, String title, [String path]) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -83,6 +83,7 @@ class SQFLiteConnect{
       maps["image"] = path;    
     }  
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
+    return true;
   }
 
   static String generateId() {
