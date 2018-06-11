@@ -64,7 +64,7 @@ class AddContentPageState extends State<AddContentPage> {
     if (form.validate()) {
       form.save();
       form.reset();
-      contentRef.child(Helper().base62()).set(content.toJson());
+      contentRef.child(Helper().base62()).set(content.toJson(group.key));
     }
   }
 

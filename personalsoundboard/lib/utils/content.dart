@@ -15,7 +15,7 @@ class Content {
           group = snapshot.value["group"],
           type = snapshot.value["type"];
           
-  toJson() {
+  toJson(String group) {
     return {
       "name": name,
       "group": group,
