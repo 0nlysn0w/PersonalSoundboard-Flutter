@@ -5,23 +5,23 @@ class Content {
    String name;
    String group;
    String type;
-   String cover;
+   String downloadUrl;
 
-  Content(this.name, this.group, this.type, this.cover);
+  Content(this.name, this.group, this.type, this.downloadUrl);
 
   Content.fromSnapshot(DataSnapshot snapshot)
         : key = snapshot.key,
           name = snapshot.value["name"],
           group = snapshot.value["group"],
           type = snapshot.value["type"],
-          cover = snapshot.value["cover"];
+          downloadUrl = snapshot.value["downloadUrl"];
           
-  toJson(String group) {
+  toJson() {
     return {
       "name": name,
       "group": group,
       "type": type,
-      "cover": cover
+      "downloadUrl": downloadUrl
     };
   }
 

@@ -4,6 +4,7 @@ import './content_page.dart';
 import './addgroup_page.dart';
 import '../utils/drawer.dart';
 import '../utils/group.dart';
+import '../utils/helper.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -73,7 +74,7 @@ class GroupPageState extends State<GroupPage> {
                 onTap: () {
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
                 },
-                leading: avatar(groups[index].name),
+                leading: Helper().roundAvatar(groups[index].name),
                 title: new Text(groups[index].name),
               )
             )
@@ -81,13 +82,6 @@ class GroupPageState extends State<GroupPage> {
         }
       ),
       drawer: new TestDrawer(),
-    );
-  }
-
-  CircleAvatar avatar(String groupName) {
-    return new CircleAvatar(
-      backgroundColor: Colors.redAccent,
-      child: new Text(groupName[0]),
     );
   }
 }

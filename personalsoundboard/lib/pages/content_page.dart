@@ -30,7 +30,6 @@ class ContentPageState extends State<ContentPage> {
     super.initState();    
     final FirebaseDatabase database = FirebaseDatabase.instance;
     contentRef = database.reference().child('content');
-    contentRef.equalTo(group.key);
     contentRef.onChildAdded.listen(_onEntryAdded);
     contentRef.onChildChanged.listen(_onEntryChanged);
   }
@@ -79,7 +78,9 @@ class ContentPageState extends State<ContentPage> {
       return new Card(
         child: new InkWell(
           child: new Text(contents[index].name),
-          onTap: () => debugPrint("item pressed"),
+          // child: contents[index].downloadUrl == null
+          //   ? new Text(contents[index].name)
+          //   : new Image.network(contents[index].downloadUrl)
         ),
       );
     });

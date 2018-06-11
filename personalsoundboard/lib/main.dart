@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:personalsoundboard/pages/content_page.dart';
 import './pages/group_page.dart';
 
 void main(){

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 
 import 'package:image_picker/image_picker.dart';
 import '../utils/content.dart';
@@ -11,7 +10,7 @@ import '../utils/group.dart';
 import '../utils/helper.dart';
 import './content_page.dart';
 
-import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddContentPage extends StatefulWidget {
   AddContentPage(this.group);
@@ -58,13 +57,25 @@ class AddContentPageState extends State<AddContentPage> {
     });
   }
 
-  void handleSubmit() {
-    final FormState form = formKey.currentState;
+  Future handleSubmit(File image) async {
+    // Create base62 key for record and filename
+    String contentKey = Helper().base62();
 
+    String fileType = image.path.split(".")[1];
+    
+    // final StorageReference ref = FirebaseStorage.instance.ref().child(contentKey);
+    // final StorageUploadTask task = ref.putFile(image);
+    // final Uri downloadUrl = (await task.future).downloadUrl;
+
+    content.group = group.key;
+    content.type = fileType;
+    // content.downloadUrl = downloadUrl.toString();
+
+    final FormState form = formKey.currentState;
     if (form.validate()) {
       form.save();
       form.reset();
-      contentRef.child(Helper().base62()).set(content.toJson(group.key));
+      contentRef.child(contentKey).set(content.toJson());
     }
   }
 
@@ -96,15 +107,15 @@ class AddContentPageState extends State<AddContentPage> {
                   ),
                 ),
               ),
-            )
-            // new Card(
+            ),
+            new Card(
 
-            //   child: _image == null
-            //   ? new RaisedButton(
-            //     onPressed: getImage,
-            //     child: new Icon(Icons.add))
-            //   : new Image.file(_image)
-            // )
+              child: _image == null
+              ? new RaisedButton(
+                onPressed: getImage,
+                child: new Icon(Icons.add))
+              : new Image.file(_image)
+            )
           ],
         ),
         floatingActionButton: new FloatingActionButton(
@@ -113,7 +124,7 @@ class AddContentPageState extends State<AddContentPage> {
                 context,
                 new MaterialPageRoute(
                     builder: (context) => new ContentPage(group)));
-            handleSubmit();
+            handleSubmit(_image);
           },
           child: new Icon(Icons.check_circle),
         ));

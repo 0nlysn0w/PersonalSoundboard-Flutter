@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:core';
+import 'package:flutter/material.dart';
 
 class Helper {
   int length = 10;
@@ -14,4 +15,13 @@ class Helper {
     }
     return result;
   }
+
+  CircleAvatar roundAvatar(String content) {
+    return new CircleAvatar(
+      backgroundColor: Colors.redAccent,
+      child: new Text(content[0]),
+    );
+  }
+
+
 }
