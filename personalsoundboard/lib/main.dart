@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
             header: new Text(sounds[index]["title"]),
             child: 
             new InkResponse(
-              child: new Icon(Icons.play_arrow),
+              child: sounds[index]["image"] == null ? new Icon(Icons.play_arrow) : new Image.file(sounds[index]["image"]),
               // new Text(sounds[index]["title"]),
               onTap: () {
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
