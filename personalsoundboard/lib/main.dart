@@ -126,9 +126,11 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (BuildContext builder, int index){
         return new Card(
           child: new GridTile(
+            header: new Text(sounds[index]["title"]),
             child: 
             new InkResponse(
-              child:new Text(sounds[index]["title"]),
+              child: new Icon(Icons.play_arrow),
+              // new Text(sounds[index]["title"]),
               onTap: () {
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },
@@ -288,7 +290,9 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
       new Center(
         child: new RaisedButton(
           onPressed: () {
-            _db.insertTitleAndImage(_id, image.path, title);
+            if (_formKey.currentState.validate()) {
+              _db.insertTitleAndImage(_id, image.path, title);
+            }
           },
           child: new Text("Save"),
         ),

@@ -79,6 +79,7 @@ class SQFLiteConnect{
     );
     Map<String, dynamic> maps = new Map<String, dynamic>();
     maps["title"] = title;    
+    maps["image"] = path;
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
   }
 
@@ -105,6 +106,6 @@ class SQFLiteConnect{
     _db.delete("DBLSounds", where: "id == + '" + id + "'");
   }
   get onCreateDb {
-    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image BLOB, sound TEXT);";
+    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT);";
   }
 }
