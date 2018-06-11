@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'audioplayer.dart';
 import 'audiorecord.dart';
 import 'sqflite_connection.dart';
@@ -112,15 +113,28 @@ class _MyHomePageState extends State<MyHomePage> {
   void gridviewthing() async {
     SQFLiteConnect _db = new SQFLiteConnect();
     List<Map<String, dynamic>> sounds = await _db.getSounds();
+    List<Widget> images = new List<Widget>();
+    for (var item in sounds) {
+      String path = item["image"];
+      if (item["image"] == null) {
+        images.add(new Icon(Icons.play_arrow));
+      } else {
+        final file = new File(path);
+        // final meep = await rootBundle.load(path);
+        // await file.writeAsBytes(meep.buffer.asUint8List());
+        images.add(new Image.file(file));
+      }
+    }
     row = new GridView.builder(
       itemCount: sounds.length,
       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
       itemBuilder: (BuildContext builder, int index){
         return new Card(
           child: new GridTile(
+            header: new Text(sounds[index]["title"]),
             child: 
             new InkResponse(
-              child:new Text(sounds[index]["title"] == null ?"text": sounds[index]["title"]),
+              child: images[index],
               onTap: () {
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },

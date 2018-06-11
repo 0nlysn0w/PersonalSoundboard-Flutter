@@ -80,7 +80,7 @@ class SQFLiteConnect{
     Map<String, dynamic> maps = new Map<String, dynamic>();
     maps["title"] = title;  
     if (path != null) {
-      maps["image"] = path;    
+      maps["image"] = path;
     }  
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
     return true;
