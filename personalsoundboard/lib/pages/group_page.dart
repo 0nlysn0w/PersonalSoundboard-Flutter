@@ -81,7 +81,7 @@ class GroupPageState extends State<GroupPage> {
           );
         }
       ),
-      drawer: new TestDrawer(),
+      
     );
   }
 }

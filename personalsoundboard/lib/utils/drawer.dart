@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../pages/group_page.dart';
+import '../main.dart';
 
 class TestDrawer extends StatelessWidget {
   @override
@@ -18,16 +19,16 @@ class TestDrawer extends StatelessWidget {
               ),
             ),
             new ListTile(
-              title: new Text("Groups"),
+              title: new Text("Personal"),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new GroupPage()));
+                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new MyApp()));
               }
             ),
             new Divider(),
             new ListTile(
-              title: new Text("Personal"),
+              title: new Text("Groups"),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
                 Navigator.of(context).pop();
