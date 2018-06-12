@@ -62,7 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Dialog
   Future<Null> _soundOptions(String id) async {
-    var db = new SQFLiteConnect();
     await showDialog<Department>(
       context: context,
       builder: (BuildContext context) {
@@ -78,7 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
-                  //db.deleteSound(id);
+                  deleteSounds(id);
+                  Navigator.pop(context);
                 },
                 child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
               ),
@@ -111,8 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
         images.add(new Icon(Icons.play_arrow));
       } else {
         final file = new File(path);
-        // final meep = await rootBundle.load(path);
-        // await file.writeAsBytes(meep.buffer.asUint8List());
         images.add(new Image.file(file));
       }
     }
@@ -140,6 +138,14 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
     setState(() {});
+  }
+
+  void deleteSounds(String id) async {
+    SQFLiteConnect db = new SQFLiteConnect();
+    bool complete = await db.deleteSound(id);
+    if (complete) {
+      gridviewthing();
+    }
   }
 
   void _addSounds() async {
@@ -199,6 +205,9 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
   picker() async {
     print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if () {
+      
+    }
     print(img.path);
     setState(() {
       image = img;

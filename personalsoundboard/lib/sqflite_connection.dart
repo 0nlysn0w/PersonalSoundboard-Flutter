@@ -98,7 +98,7 @@ class SQFLiteConnect{
       return result;
   }
 
-  void deleteSound(String id) async {
+  Future<bool> deleteSound(String id) async {
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
@@ -107,6 +107,7 @@ class SQFLiteConnect{
       }
     );
     _db.delete("DBLSounds", where: "id == + '" + id + "'");
+    return true;
   }
   get onCreateDb {
     return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT);";
