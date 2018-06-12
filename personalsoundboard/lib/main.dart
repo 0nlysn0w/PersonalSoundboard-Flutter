@@ -216,12 +216,60 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
   PictureAndTitleScreen(String id) {
     _id = id;
   }
-  picker() async {
+  pickerGallery() async {
     print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = img;
     });
+  }
+  pickerCamera() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      image = img;
+    });
+  }
+  
+
+ Future<Null> picker() async {
+    await showDialog<Department>(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  pickerGallery();
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.image, size: 80.0, color: Colors.blue,),
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  pickerCamera();
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.camera_alt, size: 80.0, color: Colors.red,),
+              ),
+              )],
+            )
+          ],
+        );
+      }
+    );
+    setState(() { });
+
   }
 
   @override
