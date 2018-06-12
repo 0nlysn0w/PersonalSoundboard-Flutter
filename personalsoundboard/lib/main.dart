@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisSize: MainAxisSize.max,
             children: <Widget>[
             new Container(
-              padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
                   deleteSounds(id);
@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             new Container(
-              padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
 
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (BuildContext builder, int index){
         return new Card(
           child: new GridTile(
-            header: new Text(sounds[index]["title"] == null ? "Text" : sounds[index]["title"]),
+            footer: new Text(sounds[index]["title"] == null ? "Text" : sounds[index]["title"]),
             child: 
             new InkResponse(
               child: images[index],
@@ -205,10 +205,6 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
   picker() async {
     print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if () {
-      
-    }
-    print(img.path);
     setState(() {
       image = img;
     });
