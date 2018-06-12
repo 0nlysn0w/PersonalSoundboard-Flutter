@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "691997490382",
+    "firebase_url": "https://personalsoundboard.firebaseio.com",
+    "project_id": "personalsoundboard",
+    "storage_bucket": "personalsoundboard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691997490382:android:e7d02fafb3b31a63",
+        "android_client_info": {
+          "package_name": "com.example.personalsoundboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "691997490382-o4vema12c0c7n1o0a9cikjre0opvmb4p.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "691997490382-o4vema12c0c7n1o0a9cikjre0opvmb4p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9Poe7CmD9TVUkvbaIIEAAsVluFE-cgNI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
