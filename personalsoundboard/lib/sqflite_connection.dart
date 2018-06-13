@@ -147,6 +147,19 @@ class SQFLiteConnect{
     return groups;
   }
 
+  Future<bool> groupExists(String id) async {
+    Database _db = await openDatabase(await connectionstringGroup(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateGroup
+        );
+      }
+    );
+
+    var m = await _db.query("DBLGroups", where: "id == '" + id + "'");
+    return m.length != 0;
+  }
+
   Future<bool> deleteGroup(String id) async {
     Database _db = await openDatabase(await connectionstringGroup(), version: 1,
       onCreate: (Database db, int version) async {

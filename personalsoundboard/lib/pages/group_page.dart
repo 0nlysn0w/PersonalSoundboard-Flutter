@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 import '../sqflite_connection.dart';
 import './content_page.dart';
@@ -92,7 +93,7 @@ class GroupPageState extends State<GroupPage> {
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(dbGroups[index]))).whenComplete(() => getGroups());
                 },
                 onLongPress: () {
-                  _dialogOptions(dbGroups[index].key);
+                  _dialogOptions(dbGroups[index].key, dbGroups[index].name);
                 },
                 leading: Helper().roundAvatar(dbGroups[index].name),
                 title: new Text(dbGroups[index].name),
@@ -106,13 +107,13 @@ class GroupPageState extends State<GroupPage> {
         });
   }
 
-    Future<Null> _dialogOptions(String id) async {
+    Future<Null> _dialogOptions(String id, String name) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
           contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
-          title: const Text('What would you like to do with this sound?', textAlign: TextAlign.center,),
+          title: const Text('What would you like to do with this group?', textAlign: TextAlign.center,),
           children: <Widget>[
             new Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -131,7 +132,7 @@ class GroupPageState extends State<GroupPage> {
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
-
+                  share(id, name);
                 },
                 child: const Icon(Icons.reply, size: 80.0, color: Colors.green,),
               ),
@@ -144,7 +145,9 @@ class GroupPageState extends State<GroupPage> {
     setState(() { });
 
   }
-
+  void share(String id, String name) {
+    Share.share("Join the $name soundboard! http://www.personalsoundboard.com/groups?key=$id&name=$name");
+  }
   void deleteGroup(String id) async {
     SQFLiteConnect db = new SQFLiteConnect();
     var m = await db.deleteGroup(id);

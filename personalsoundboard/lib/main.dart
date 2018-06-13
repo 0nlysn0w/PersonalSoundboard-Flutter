@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'audioplayer.dart';
 import 'audiorecord.dart';
+import 'pages/content_page.dart';
 import 'sqflite_connection.dart';
 import 'package:flutter/services.dart';
 
@@ -11,6 +12,8 @@ import 'package:simple_permissions/simple_permissions.dart';
 import 'package:image_picker/image_picker.dart';
 import './utils/drawer.dart';
 import 'package:uni_links/uni_links.dart';
+
+import 'utils/group.dart';
 
 
 enum PlayerState { stopped, playing, paused }
@@ -50,7 +53,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-enum UniLinksType { string, uri }
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin  {
   @override
   void initState() {
@@ -62,7 +64,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     initPlatformState();
 
   }
-  UniLinksType _type = UniLinksType.string;
   
   Uri _latestUri;
   String _latestLink = "unknown";
@@ -70,11 +71,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   StreamSubscription _sub;
   Widget row;
   initPlatformState() async {
-    if (_type == UniLinksType.string) {
       await initPlatformStateForStringUniLinks();
-    } else {
-      await initPlatformStateForUriUniLinks();
-    }
+
   }
 
   initPlatformStateForStringUniLinks() async {
@@ -123,65 +121,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-
-    setState(() {
-      _latestLink = initialLink;
-      _latestUri = initialUri;
-    });
-  }
-
-  /// An implementation using the [Uri] convenience helpers
-  initPlatformStateForUriUniLinks() async {
-    // Attach a listener to the Uri links stream
-    _sub = getUriLinksStream().listen((Uri uri) {
-      if (!mounted) return;
-      setState(() {
-        _latestUri = uri;
-        _latestLink = uri?.toString() ?? 'Unknown';
-      });
-    }, onError: (err) {
-      if (!mounted) return;
-      setState(() {
-        _latestUri = null;
-        _latestLink = 'Failed to get latest link: $err.';
-      });
-    });
-
-    // Attach a second listener to the stream
-    getUriLinksStream().listen((Uri uri) {
-      print('got uri: ${uri?.path} ${uri?.queryParametersAll}');
-    }, onError: (err) {
-      print('got err: $err');
-    });
-
-    // Get the latest Uri
-    Uri initialUri;
-    String initialLink;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      initialUri = await getInitialUri();
-      print('initial uri: ${initialUri?.path}'
-          ' ${initialUri?.queryParametersAll}');
-      initialLink = initialUri?.toString();
-    } on PlatformException {
-      initialUri = null;
-      initialLink = 'Failed to get initial uri.';
-    } on FormatException {
-      initialUri = null;
-      initialLink = 'Bad parse the initial link as Uri.';
+    if(initialUri != null) {
+      Map<String, String> m = initialUri.queryParameters;
+      Group group = new Group(m["name"]);
+      group.key = m["key"];
+      SQFLiteConnect db = new SQFLiteConnect();
+      bool exists = await db.groupExists(group.key);
+      if(!exists) {
+        await db.addGroup(group);
+      }
+      Navigator.of(context).push( new MaterialPageRoute(builder: (context) => new ContentPage(group)));
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
     setState(() {
-      _latestUri = initialUri;
       _latestLink = initialLink;
+      _latestUri = initialUri;
     });
   }
-
 
   //Dialog
   Future<Null> _soundOptions(String id) async {
@@ -263,8 +218,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 },
               onLongPress: () {
                 _soundOptions(sounds[index]["id"]);
-               // _db.deleteSound(sounds[index]["id"]);
-                // gridviewthing();
               },
             ),
           ),
@@ -303,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       appBar: new AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: new Text(_latestLink ?? "test"),
+        title: new Text(widget.title),
         
       ),
       body: row,
@@ -340,14 +293,12 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
     _id = id;
   }
   pickerGallery() async {
-    print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = img;
     });
   }
   pickerCamera() async {
-    print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.camera);
     setState(() {
       image = img;
@@ -442,7 +393,6 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
               )
             ),
             validator: (value) {
-              print(value);
               if (value.isEmpty) {
                 return 'Please enter the title';
               }
