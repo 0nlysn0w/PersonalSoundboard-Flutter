@@ -56,7 +56,7 @@ class ContentPageState extends State<ContentPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Content of " + group.name),
+        title: new Text(group.name),
         actions: <Widget>[
           new IconButton(
             icon: new Icon(Icons.add_circle_outline),

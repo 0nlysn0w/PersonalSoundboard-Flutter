@@ -147,7 +147,9 @@ class GroupPageState extends State<GroupPage> {
 
   }
   void share(String id, String name) {
-    Share.share("Join the $name soundboard! http://www.personalsoundboard.com/groups?key=$id&name=$name");
+    String urlName = name;
+    urlName = urlName.replaceAll(new RegExp(" "), "%20");
+    Share.share("Join the $name soundboard! http://www.personalsoundboard.com/groups?key=$id&name=$urlName");
   }
   void deleteGroup(String id) async {
     SQFLiteConnect db = new SQFLiteConnect();

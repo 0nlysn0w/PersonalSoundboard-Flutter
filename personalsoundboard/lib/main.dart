@@ -128,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       SQFLiteConnect db = new SQFLiteConnect();
       bool exists = await db.groupExists(group.key);
       if(!exists) {
+        m["name"].replaceAll(new RegExp("%20"), " ");
         await db.addGroup(group);
       }
       Navigator.of(context).push( new MaterialPageRoute(builder: (context) => new ContentPage(group)));
