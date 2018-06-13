@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'audioplayer.dart';
 import 'audiorecord.dart';
+import 'pages/addtogroup_page.dart';
 import 'pages/content_page.dart';
 import 'sqflite_connection.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import './utils/drawer.dart';
 import 'package:uni_links/uni_links.dart';
 
+import 'utils/content.dart';
 import 'utils/group.dart';
 
 
@@ -54,9 +56,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin  {
+  Content content;
+  List<Content> contents = new List();
   @override
   void initState() {
     super.initState();
+    content = Content("", "", "", "");
     AudioplayerRamon.initAudioPlayer();
     gridviewthing();
     SimplePermissions.requestPermission(Permission.RecordAudio);
@@ -140,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   //Dialog
-  Future<Null> _soundOptions(String id) async {
+  Future<Null> _soundOptions(Content content) async {
     await showDialog<Department>(
       context: context,
       builder: (BuildContext context) {
@@ -156,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
-                  deleteSounds(id);
+                  deleteSounds(content.key);
                   Navigator.pop(context);
                 },
                 child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
@@ -166,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: () {
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddToGroupPage(content)));              
 
                 },
                 child: const Icon(Icons.reply, size: 80.0, color: Colors.green,),
@@ -183,6 +189,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void gridviewthing() async {
     SQFLiteConnect _db = new SQFLiteConnect();
     List<Map<String, dynamic>> sounds = await _db.getSounds();
+
+    for(var sound in sounds) {
+      contents.add(new Content.fromLocalDb(sound));
+    }
     List<Widget> images = new List<Widget>();
     for (var item in sounds) {
       String path = item["image"];
@@ -219,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   AudioplayerRamon.localPath(sounds[index]["sound"]);
                 },
               onLongPress: () {
-                _soundOptions(sounds[index]["id"]);
+                _soundOptions(contents[index]);
               },
             ),
           ),

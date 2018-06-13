@@ -1,10 +1,20 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../audioplayer.dart';
+import '../sqflite_connection.dart';
 import '../utils/content.dart';
 import './addcontent_page.dart';
 import '../utils/group.dart';
+import 'dart:async';
+
+import '../utils/helper.dart';
 
 import 'package:firebase_database/firebase_database.dart';
+
+import 'addtogroup_page.dart';
 
 class ContentPage extends StatefulWidget {
   ContentPage(this.group);
@@ -22,6 +32,10 @@ class ContentPageState extends State<ContentPage> {
   
   List<Content> contents = new List();
   Content content;
+  List<Group> dbGroups;
+
+
+
 
   DatabaseReference contentRef;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -53,18 +67,32 @@ class ContentPageState extends State<ContentPage> {
     });
   }
 
+  _deleteContent(Content contentToDelete){
+    contentRef.child(contentToDelete.key).remove();
+    Navigator.pop(
+    context,
+    new MaterialPageRoute(
+        builder: (context) => new ContentPage(group)));
+  }
+
+  void getGroups() async {
+    SQFLiteConnect db = new SQFLiteConnect();
+    dbGroups = await db.groups();
+  }
+
+
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(group.name),
-        actions: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.add_circle_outline),
-            onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(group)));
-            },
-          )
-        ],
+        title: new Text("Content of " + group.name),
+        // actions: <Widget>[
+        //   new IconButton(
+        //     icon: new Icon(Icons.add_circle_outline),
+        //     onPressed: () {
+        //       Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddContentPage(group)));
+        //     },
+        //   )
+        // ],
       ),
       body: 
       // row
@@ -99,11 +127,11 @@ class ContentPageState extends State<ContentPage> {
                 ? new Icon(Icons.play_arrow)
                 : new Image.network(contents[index].coverUrl),
               onTap: () {
-                  // AudioplayerRamon.onlinePath(contents[index].soundUrl);
-                },
-              onLongPress: () {
-                // _soundOptions(sounds[index]["id"]);
-               // _db.deleteSound(sounds[index]["id"]);
+                AudioplayerRamon.onlinePath(contents[index].soundUrl);
+              },
+              onLongPress: () async {
+                _soundOptions(contents[index]);
+                // _db.deleteSound(sounds[index]["id"]);
                 // gridviewthing();
               },
             ),
@@ -112,6 +140,49 @@ class ContentPageState extends State<ContentPage> {
       });
     return cards;
   }
+
+    Future<Null> _soundOptions(Content pressedContent) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          title: const Text('What would you like to do with this sound?', textAlign: TextAlign.center,),
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  _deleteContent(pressedContent);
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: ()  {
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddToGroupPage(pressedContent)));              
+                          
+
+                },
+                child: const Icon(Icons.reply, size: 80.0, color: Colors.green,),
+              ),
+              )],
+            )
+          ],
+        );
+      }
+    );
+    setState(() { });
+  }
+
+
 
 
 }

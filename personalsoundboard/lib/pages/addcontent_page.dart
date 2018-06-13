@@ -24,8 +24,10 @@ class AddContentPageState extends State<AddContentPage> {
   AddContentPageState(this.group);
   Group group;
   File _image;
+  File _sound;
   String _contentKey;
   String _coverUrl;
+  String _soundUrl;
   final contentNameController = new TextEditingController();
 
   List<Content> contents = new List();
@@ -37,13 +39,14 @@ class AddContentPageState extends State<AddContentPage> {
   @override
   void initState() {
     super.initState();
-    content = Content("", "", "");
+    content = Content("", "", "", "");
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     contentRef = database.reference().child('content');
     contentRef.onChildAdded.listen(_onEntryAdded);
     contentRef.onChildChanged.listen(_onEntryChanged);
   }
+
 
   _onEntryAdded(Event event) {
     setState(() {
@@ -60,7 +63,7 @@ class AddContentPageState extends State<AddContentPage> {
     });
   }
 
-  Future<Null> uploadFiles(File image) async {
+  Future<Null> uploadCover(File image) async {
     final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey);
     final StorageUploadTask task = ref.putFile(image);
     final Uri coverUrl = (await task.future).downloadUrl;
@@ -69,7 +72,16 @@ class AddContentPageState extends State<AddContentPage> {
     print(_coverUrl);
   }
 
-  void submitRecords(File image) {
+  // Future<Null> uploadSound(File sound, [_contentKey, name]) async {
+  //   final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey);
+  //   final StorageUploadTask task = ref.putFile(sound);
+  //   final Uri soundUrl = (await task.future).downloadUrl;
+  //   _soundUrl = soundUrl.toString();
+
+  //   print(_soundUrl);
+  // }
+
+  void submitRecords(File image, File sound) {
     content.group = group.key;
     content.coverUrl = _coverUrl;
     content.name = contentNameController.text;
@@ -124,8 +136,8 @@ class AddContentPageState extends State<AddContentPage> {
             // Create base62 key for record and filename
             _contentKey = Helper().base62();
 
-            await uploadFiles(_image);
-            submitRecords(_image);
+            await uploadCover(_image);
+            submitRecords(_image,_sound);
           },
           child: new Icon(Icons.check_circle),
         ));
