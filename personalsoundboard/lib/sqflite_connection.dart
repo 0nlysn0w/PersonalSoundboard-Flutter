@@ -6,6 +6,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'utils/group.dart';
+
 class SQFLiteConnect{
 
   SQFLiteConnect() {
@@ -109,7 +111,55 @@ class SQFLiteConnect{
     _db.delete("DBLSounds", where: "id == + '" + id + "'");
     return true;
   }
+
+  Future<bool> addGroup(Group group) async{
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+
+    Map<String, dynamic> values = new Map<String, dynamic>();
+    values["id"] = group.key;
+    values["name"] = group.name;
+    _db.insert("DBLGroups", values);
+    return true;
+  }
+
+  Future<List<Group>> groups() async{
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+
+    var m = await _db.query("DBLGroups");
+    var groups = new List<Group>();
+    for (var item in m) {
+      Group group = new Group(item["name"]);
+      group.key = item["id"];
+      groups.add(group);
+    }
+    return groups;
+  }
+
+  Future<bool> deleteGroup(String id) async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+    var m = await _db.delete("DBLGroups", where: "id == '" + id + "'");
+    return true;
+  }
+  
   get onCreateDb {
-    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT);";
+    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT); CREATE TABLE DBLGroups (id VARCHAR PRIMARY KEY, name TEXT);";
   }
 }
