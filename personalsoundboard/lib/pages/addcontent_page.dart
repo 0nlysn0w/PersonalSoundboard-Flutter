@@ -26,8 +26,6 @@ class AddContentPageState extends State<AddContentPage> {
   File _image;
   String _contentKey;
   String _coverUrl;
-  //String _downloadPath;
-
   final contentNameController = new TextEditingController();
 
   List<Content> contents = new List();
