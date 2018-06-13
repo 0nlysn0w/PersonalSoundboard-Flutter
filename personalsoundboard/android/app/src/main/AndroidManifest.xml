@@ -32,17 +32,20 @@
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
-            <intent-filter
-            android:autoVerify="true">
+
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-
+            </intent-filter>
+            <intent-filter
+            android:autoVerify="true"
+            >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http"
-                            android:host="www.personalsoundboard.com"
+                            android:host="www.personalsoundboard.com" 
                             android:pathPrefix="/groups" />
 
             </intent-filter>
