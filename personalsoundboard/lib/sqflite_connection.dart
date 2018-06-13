@@ -10,35 +10,17 @@ import 'utils/group.dart';
 
 class SQFLiteConnect{
 
-  SQFLiteConnect() {
-    // connectDatabase();
-  }
-
-  // void connectDatabase() async {
-  //   _db = await openDatabase(await connectionstring(), version: 1,
-  //     onCreate: (Database db, int version) async {
-  //       await db.execute(
-  //         onCreateDb
-  //       );
-  //     }
-  //   );
-  //   deletedatabase();    
-  // }
-
-  void deletedatabase() async {
-    Database _db = await openDatabase(await connectionstring(), version: 1,
-      onCreate: (Database db, int version) async {
-        await db.execute(
-          onCreateDb
-        );
-      }
-    );
-    _db.execute("DROP TABLE DBLSounds; " + onCreateDb);
-  }
+  SQFLiteConnect();
 
   Future<String> connectionstring() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "sounds.db");
+    return path;
+  }
+
+  Future<String> connectionstringGroup() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, "groups.db");
     return path;
   }
 
@@ -68,6 +50,7 @@ class SQFLiteConnect{
       }
     );
     var result = await _db.query("DBLSounds");
+
     return result;
   }
 
@@ -85,6 +68,7 @@ class SQFLiteConnect{
       maps["image"] = path;
     }  
     _db.update("DBLSounds", maps, where: "id == '" + id + "'");
+
     return true;
   }
 
@@ -104,11 +88,13 @@ class SQFLiteConnect{
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          onCreateDb
+          onCreateDb,
+          
         );
       }
     );
     _db.delete("DBLSounds", where: "id == + '" + id + "'");
+
     return true;
   }
 
@@ -120,14 +106,15 @@ class SQFLiteConnect{
         );
       }
     );
-    await _db.query("DBLSounds", where: "id == '" + id + "'");
+    var m = await _db.query("DBLSounds", where: "id == '" + id + "'");
+    return m.first;
   }
 
   Future<bool> addGroup(Group group) async{
-    Database _db = await openDatabase(await connectionstring(), version: 1,
+    Database _db = await openDatabase(await connectionstringGroup(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          onCreateDb
+          onCreateGroup
         );
       }
     );
@@ -136,14 +123,15 @@ class SQFLiteConnect{
     values["id"] = group.key;
     values["name"] = group.name;
     _db.insert("DBLGroups", values);
+
     return true;
   }
 
   Future<List<Group>> groups() async{
-    Database _db = await openDatabase(await connectionstring(), version: 1,
+    Database _db = await openDatabase(await connectionstringGroup(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          onCreateDb
+          onCreateGroup
         );
       }
     );
@@ -155,22 +143,28 @@ class SQFLiteConnect{
       group.key = item["id"];
       groups.add(group);
     }
+
     return groups;
   }
 
   Future<bool> deleteGroup(String id) async {
-    Database _db = await openDatabase(await connectionstring(), version: 1,
+    Database _db = await openDatabase(await connectionstringGroup(), version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-          onCreateDb
+          onCreateGroup
         );
       }
     );
     var m = await _db.delete("DBLGroups", where: "id == '" + id + "'");
+
     return true;
   }
   
   get onCreateDb {
-    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT); CREATE TABLE DBLGroups (id VARCHAR PRIMARY KEY, name TEXT);";
+    return "CREATE TABLE DBLSounds (id VARCHAR PRIMARY KEY, title TEXT, image TEXT, sound TEXT);";
+  }
+
+  get onCreateGroup {
+    return "CREATE TABLE DBLGroups (id VARCHAR PRIMARY KEY, name TEXT); ";
   }
 }

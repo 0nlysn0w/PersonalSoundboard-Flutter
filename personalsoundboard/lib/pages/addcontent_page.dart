@@ -60,12 +60,15 @@ class AddContentPageState extends State<AddContentPage> {
   Future handleSubmit(File image) async {
     // Create base62 key for record and filename
     String contentKey = Helper().base62();
+
+    String fileType = image.path.split(".")[1];
     
     // final StorageReference ref = FirebaseStorage.instance.ref().child(contentKey);
     // final StorageUploadTask task = ref.putFile(image);
     // final Uri downloadUrl = (await task.future).downloadUrl;
 
     content.group = group.key;
+    // content.type = fileType;
     // content.downloadUrl = downloadUrl.toString();
 
     final FormState form = formKey.currentState;

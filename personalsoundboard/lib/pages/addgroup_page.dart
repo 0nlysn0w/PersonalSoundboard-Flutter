@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../sqflite_connection.dart';
 import '../utils/group.dart';
 import '../utils/helper.dart';
 import 'group_page.dart';
@@ -44,13 +45,22 @@ class AddGroupPageState extends State<AddGroupPage> {
     });
   }
 
-  void handleSubmit() {
+  void handleSubmit() async {
     final FormState form = formKey.currentState;
 
     if (form.validate()) {
+      var key = Helper().base62();
+
       form.save();
       form.reset();
-      groupRef.child(Helper().base62()).set(group.toJson());
+      groupRef.child(key).set(group.toJson());
+      group.key = key;
+      SQFLiteConnect db = new SQFLiteConnect();
+      var m = await db.addGroup(group);
+      if(m != null) {
+                    Navigator.pop(context,
+                new MaterialPageRoute(builder: (context) => new GroupPage()));
+      }
     }
   }
 
@@ -80,8 +90,6 @@ class AddGroupPageState extends State<AddGroupPage> {
       floatingActionButton: new FloatingActionButton(
           onPressed: () {
             handleSubmit();
-            Navigator.pop(context,
-                new MaterialPageRoute(builder: (context) => new GroupPage()));
           },
           child: new Icon(Icons.check_circle)),
     );
