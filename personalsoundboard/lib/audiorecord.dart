@@ -90,7 +90,7 @@ class AudiorecorderRamon extends State<AppBody> with SingleTickerProviderStateMi
         setState(() {
           _recording = new Recording(duration: new Duration(), path: _path);
           _isRecording = isRecording;
-          timer = new Timer(const Duration(seconds: 15), () => _stop());
+          timer = new Timer(const Duration(seconds: 10), () => _stop());
         });
       } else {
         Scaffold.of(context).showSnackBar(new SnackBar(content: new Text("You must accept permissions")));
