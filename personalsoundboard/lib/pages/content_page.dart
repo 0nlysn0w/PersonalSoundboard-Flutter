@@ -101,7 +101,7 @@ class ContentPageState extends State<ContentPage> {
                 ? new Icon(Icons.play_arrow)
                 : new Image.network(contents[index].coverUrl),
               onTap: () {
-                  AudioplayerRamon.onlinePath(contents[index].soundUrl);
+                  // AudioplayerRamon.onlinePath(contents[index].soundUrl);
                 },
               onLongPress: () {
                 // _soundOptions(sounds[index]["id"]);

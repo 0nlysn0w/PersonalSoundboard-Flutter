@@ -24,6 +24,11 @@ class AddContentPageState extends State<AddContentPage> {
   AddContentPageState(this.group);
   Group group;
   File _image;
+  String _contentKey;
+  String _coverUrl;
+  //String _downloadPath;
+
+  final contentNameController = new TextEditingController();
 
   List<Content> contents = new List();
   Content content;
@@ -34,7 +39,7 @@ class AddContentPageState extends State<AddContentPage> {
   @override
   void initState() {
     super.initState();
-    content = Content("", "", "", "");
+    content = Content("", "", "");
 
     final FirebaseDatabase database = FirebaseDatabase.instance;
     contentRef = database.reference().child('content');
@@ -57,26 +62,22 @@ class AddContentPageState extends State<AddContentPage> {
     });
   }
 
-  Future handleSubmit(File image) async {
-    // Create base62 key for record and filename
-    String contentKey = Helper().base62();
+  Future<Null> uploadFiles(File image) async {
+    final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey);
+    final StorageUploadTask task = ref.putFile(image);
+    final Uri coverUrl = (await task.future).downloadUrl;
+    _coverUrl = coverUrl.toString();
 
-    String fileType = image.path.split(".")[1];
-    
-    // final StorageReference ref = FirebaseStorage.instance.ref().child(contentKey);
-    // final StorageUploadTask task = ref.putFile(image);
-    // final Uri downloadUrl = (await task.future).downloadUrl;
+    print(_coverUrl);
+  }
 
+  void submitRecords(File image) {
     content.group = group.key;
-    // content.type = fileType;
-    // content.downloadUrl = downloadUrl.toString();
+    content.coverUrl = _coverUrl;
+    content.name = contentNameController.text;
 
-    final FormState form = formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      form.reset();
-      contentRef.child(contentKey).set(content.toJson());
-    }
+    contentRef.child(_contentKey).set(content.toJson());
+    
   }
 
   Future getImage() async {
@@ -100,6 +101,7 @@ class AddContentPageState extends State<AddContentPage> {
               child: new ListTile(
                 leading: const Icon(Icons.description),
                 title: new TextFormField(
+                  controller: contentNameController,
                   onSaved: (val) => content.name = val,
                   validator: (val) => val == "" ? val : null,
                   decoration: new InputDecoration(
@@ -109,22 +111,23 @@ class AddContentPageState extends State<AddContentPage> {
               ),
             ),
             new Card(
-
-              child: _image == null
-              ? new RaisedButton(
-                onPressed: getImage,
-                child: new Icon(Icons.add))
-              : new Image.file(_image)
-            )
+                child: _image == null
+                    ? new RaisedButton(
+                        onPressed: getImage, child: new Icon(Icons.add))
+                    : new Image.file(_image))
           ],
         ),
         floatingActionButton: new FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.pop(
                 context,
                 new MaterialPageRoute(
                     builder: (context) => new ContentPage(group)));
-            handleSubmit(_image);
+            // Create base62 key for record and filename
+            _contentKey = Helper().base62();
+
+            await uploadFiles(_image);
+            submitRecords(_image);
           },
           child: new Icon(Icons.check_circle),
         ));
