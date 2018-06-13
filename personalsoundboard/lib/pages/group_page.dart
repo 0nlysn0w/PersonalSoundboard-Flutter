@@ -89,6 +89,7 @@ class GroupPageState extends State<GroupPage> {
           return new Container(
             margin: const EdgeInsets.only(top: 5.0),
             child: new Card(
+              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
               child: new ListTile(
                 onTap: () {
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(dbGroups[index]))).whenComplete(() => getGroups());

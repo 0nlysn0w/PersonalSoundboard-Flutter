@@ -5,23 +5,29 @@ import 'package:share/share.dart';
 
 import '../main.dart';
 
+
 class TestDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Drawer(
-        child: new ListView(
+        child: new Container(
+          color: Colors.redAccent[100],
+          child: new ListView(
           children: <Widget>[
             new DrawerHeader(
               child: Text(""),
               decoration: new BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.fill,
-                  image: new NetworkImage("https://c.wallhere.com/photos/e1/9f/1920x1080_px_landscape_Low_Poly_render-1106972.jpg!d")
+                  image: new AssetImage('icon/drawer_logo.png')
                 ),
               ),
             ),
             new ListTile(
-              title: new Text("Personal"),
+              title: new Container(
+                alignment: Alignment.center,
+                child: new Text("Personal"),
+                ),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
                 Navigator.of(context).pop();
@@ -30,7 +36,10 @@ class TestDrawer extends StatelessWidget {
             ),
             new Divider(),
             new ListTile(
-              title: new Text("Groups"),
+              title: new Container(
+                alignment: Alignment.center,
+                child: new Text("Groups"),
+              ),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
                 Navigator.of(context).pop();
@@ -38,6 +47,7 @@ class TestDrawer extends StatelessWidget {
               }
             ),
           ],
+        ),
         ),
       );
   }

@@ -79,6 +79,7 @@ class ContentPageState extends State<ContentPage> {
     List<Card> cards = new List<Card>.generate(numberOfContents, 
     (int index) {
       return new Card(
+          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
           child: new GridTile(
             footer: new Column(
               mainAxisAlignment: MainAxisAlignment.center,

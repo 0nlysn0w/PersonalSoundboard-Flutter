@@ -28,9 +28,9 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'PersonalSoundboard',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
       ),
-      home: new MyHomePage(title: 'PersonalSoundboard'),
+      home: new MyHomePage(title: 'Personal Soundboard'),
     );
   }
 }
@@ -198,6 +198,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
       itemBuilder: (BuildContext builder, int index){
         return new Card(
+          shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
           child: new GridTile(
             footer: new Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -263,6 +264,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       body: row,
       
       floatingActionButton: new FloatingActionButton(
+        backgroundColor: Colors.red[400],
         onPressed: _addSounds,
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),
@@ -382,8 +384,7 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
       new Center(
         child: new Form(
           key: _formKey,
-          child:
-            new TextFormField(
+          child: new TextFormField(
             textAlign: TextAlign.center,
             autofocus: false,
             maxLength: 30,
@@ -406,11 +407,13 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
       
       ),
       new Center(
-        child: new RaisedButton(
+        child: new IconButton(
+          color: Colors.green,
+          icon: new Icon(Icons.check_circle),
+          iconSize: 100.0,
           onPressed: () {
               _insertIntoDb();
           },
-          child: new Text("Save"),
         ),
       )
     ]
