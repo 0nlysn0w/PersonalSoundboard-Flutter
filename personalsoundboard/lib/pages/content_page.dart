@@ -36,7 +36,6 @@ class ContentPageState extends State<ContentPage> {
     contentRef = database.reference().child('content');
     contentRef.onChildAdded.listen(_onEntryAdded);
     contentRef.onChildChanged.listen(_onEntryChanged);
-    gridViewCustomBuild();
   }
 
     _onEntryAdded(Event event) {
@@ -116,53 +115,5 @@ class ContentPageState extends State<ContentPage> {
     return cards;
   }
 
-  void gridViewCustomBuild() async {
-
-    List<Widget> images = new List<Widget>();
-    for (var item in contents) {
-      String path = item.coverUrl;
-      if (path == null) {
-        images.add(new Icon(Icons.play_arrow));
-      } else {
-        final file = new File(path);
-        images.add(new Image.file(file));
-      }
-    }
-    row = new GridView.builder(
-      itemCount: contents.length,
-      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      itemBuilder: (BuildContext builder, int index){
-        return new Card(
-          child: new GridTile(
-            footer: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new DecoratedBox(
-                  decoration: new BoxDecoration( 
-                    color: Colors.white70,
-                    borderRadius: new BorderRadius.circular(5.0),
-                  ),
-                child: new Text(contents[index].name == null ? '' : contents[index].name, textAlign: TextAlign.center,)
-                )
-              ],
-            ),
-            child: 
-            new InkResponse(
-              child: images[index],
-              onTap: () {
-                  AudioplayerRamon.onlinePath(contents[index].soundUrl);
-                },
-              onLongPress: () {
-                // _soundOptions(sounds[index]["id"]);
-               // _db.deleteSound(sounds[index]["id"]);
-                // gridviewthing();
-              },
-            ),
-          ),
-        );
-      },
-    );
-    setState(() {});
-  }
 
 }
