@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -15,11 +16,12 @@ class AppBody extends StatefulWidget{
   State<StatefulWidget> createState() => new AudiorecorderRamon();
 }
 
-class AudiorecorderRamon extends State<AppBody> {
+class AudiorecorderRamon extends State<AppBody> with SingleTickerProviderStateMixin {
   String _id = "";
   String _path = "";
   SQFLiteConnect _db;
   Color color;
+  Timer timer;
   AudiorecorderRamon() { 
     _id = SQFLiteConnect.generateId();
     checkPerms();
@@ -88,6 +90,7 @@ class AudiorecorderRamon extends State<AppBody> {
         setState(() {
           _recording = new Recording(duration: new Duration(), path: _path);
           _isRecording = isRecording;
+          timer = new Timer(const Duration(seconds: 15), () => _stop());
         });
       } else {
         Scaffold.of(context).showSnackBar(new SnackBar(content: new Text("You must accept permissions")));
@@ -98,6 +101,9 @@ class AudiorecorderRamon extends State<AppBody> {
   }
 
   _stop() async {
+    if (timer.isActive) {
+      timer.cancel();
+    }
     var recording = await AudioRecorder.stop();
     bool isRecording = await AudioRecorder.isRecording;
     setState(() {
