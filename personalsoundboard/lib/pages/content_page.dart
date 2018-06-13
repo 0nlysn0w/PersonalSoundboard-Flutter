@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../audioplayer.dart';
 import '../utils/content.dart';
 import './addcontent_page.dart';
 import '../utils/group.dart';
@@ -18,6 +21,7 @@ class ContentPageState extends State<ContentPage> {
   ContentPageState(this.group);
   
   Group group;
+  Widget row;
   
   List<Content> contents = new List();
   Content content;
@@ -65,7 +69,9 @@ class ContentPageState extends State<ContentPage> {
           )
         ],
       ),
-      body: new GridView.extent(
+      body: 
+      // row
+      new GridView.extent(
           children: _cardGridBuilder(contents.length), 
           maxCrossAxisExtent: 120.0,
         )
@@ -76,14 +82,38 @@ class ContentPageState extends State<ContentPage> {
     List<Card> cards = new List<Card>.generate(numberOfContents, 
     (int index) {
       return new Card(
-        child: new InkWell(
-          child: new Text(contents[index].name),
-          // child: contents[index].downloadUrl == null
-          //   ? new Text(contents[index].name)
-          //   : new Image.network(contents[index].downloadUrl)
-        ),
-      );
-    });
+          child: new GridTile(
+            footer: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new DecoratedBox(
+                  decoration: new BoxDecoration( 
+                    color: Colors.white70,
+                    borderRadius: new BorderRadius.circular(5.0),
+                  ),
+                child: new Text(contents[index].name == null ? '' : contents[index].name, textAlign: TextAlign.center,)
+                )
+              ],
+            ),
+            child: 
+            new InkResponse(
+              child: contents[index].coverUrl == null
+                ? new Icon(Icons.play_arrow)
+                : new Image.network(contents[index].coverUrl),
+              onTap: () {
+                  AudioplayerRamon.onlinePath(contents[index].soundUrl);
+                },
+              onLongPress: () {
+                // _soundOptions(sounds[index]["id"]);
+               // _db.deleteSound(sounds[index]["id"]);
+                // gridviewthing();
+              },
+            ),
+          ),
+        );
+      });
     return cards;
   }
+
+
 }

@@ -19,9 +19,6 @@ class AudioplayerRamon {
     }
   }
 
-    static Future<ByteData> loadAssetTheo() async {
-      return await rootBundle.load('sounds/theo.mp3');
-  }
 
   static dynamic localPath(String path) async {
     if(isPlaying) {
@@ -36,13 +33,11 @@ class AudioplayerRamon {
     }
   }
 
-  static dynamic localPathTheo() async {
+  static dynamic onlinePath(String url) async {
     if(isPlaying) {
       audioPlayer.stop();
     }
-    final file = new File('${(await getTemporaryDirectory()).path}/theo.mp3');
-    await file.writeAsBytes((await loadAssetTheo()).buffer.asUint8List());
-    final result = await audioPlayer.play(file.path, isLocal: true);
+    final result = await audioPlayer.play(url);
     if (result == 1) {
        playerState = PlayerState.playing;
     }
