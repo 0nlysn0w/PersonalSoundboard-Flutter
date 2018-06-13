@@ -112,6 +112,17 @@ class SQFLiteConnect{
     return true;
   }
 
+  Future<Map<String, dynamic>> getSound(String id) async {
+    Database _db = await openDatabase(await connectionstring(), version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          onCreateDb
+        );
+      }
+    );
+    await _db.query("DBLSounds", where: "id == '" + id + "'");
+  }
+
   Future<bool> addGroup(Group group) async{
     Database _db = await openDatabase(await connectionstring(), version: 1,
       onCreate: (Database db, int version) async {
