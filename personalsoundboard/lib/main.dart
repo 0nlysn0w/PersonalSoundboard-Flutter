@@ -8,6 +8,7 @@ import 'sqflite_connection.dart';
 
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:image_picker/image_picker.dart';
+import './utils/drawer.dart';
 
 
 enum PlayerState { stopped, playing, paused }
@@ -120,7 +121,18 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (BuildContext builder, int index){
         return new Card(
           child: new GridTile(
-            footer: new Text(sounds[index]["title"] == null ? "Text" : sounds[index]["title"]),
+            footer: new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new DecoratedBox(
+                  decoration: new BoxDecoration( 
+                    color: Colors.white70,
+                    borderRadius: new BorderRadius.circular(5.0),
+                  ),
+                child: new Text(sounds[index]["title"] == null ? '' : sounds[index]["title"], textAlign: TextAlign.center,)
+                )
+              ],
+            ),
             child: 
             new InkResponse(
               child: images[index],
@@ -170,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: new Text(widget.title),
+        
       ),
       body: row,
       
@@ -178,10 +191,12 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: new Icon(Icons.add_box),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-
+      drawer: new TestDrawer(),
     );
   }
 }
+
+
 
 class PictureAndTitleScreenBody extends StatefulWidget{
   String _id;
@@ -202,12 +217,60 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
   PictureAndTitleScreen(String id) {
     _id = id;
   }
-  picker() async {
+  pickerGallery() async {
     print('Picker is called');
     File img = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       image = img;
     });
+  }
+  pickerCamera() async {
+    print('Picker is called');
+    File img = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      image = img;
+    });
+  }
+  
+
+ Future<Null> picker() async {
+    await showDialog<Department>(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  pickerGallery();
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.image, size: 80.0, color: Colors.blue,),
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  pickerCamera();
+                  Navigator.pop(context);
+                },
+                child: const Icon(Icons.camera_alt, size: 80.0, color: Colors.red,),
+              ),
+              )],
+            )
+          ],
+        );
+      }
+    );
+    setState(() { });
+
   }
 
   @override
@@ -215,23 +278,31 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(''),
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back),
+          onPressed: (){_insertIntoDb();},
+        ),
       ),
     body: new Wrap(
       children: <Widget>[
         image == null?new Center(
+          child: new Container( width: 220.0, height: 220.0,
           child: new IconButton(
               icon: new Icon(Icons.add_photo_alternate),
-              iconSize: 300.0,
+              iconSize: 200.0,
               color: Colors.green,
               onPressed: () {
                 picker();
               },
             ),
+          ),
         ):
     
-      new Center(
+      new Center( heightFactor: 1.1,
+         child: new Container( width: 200.0, height: 200.0,
         child:new InkResponse(child: new Image.file(image), onTap: () {picker();},),
       
+      ),
       ),
 
       new Center(
@@ -283,3 +354,4 @@ class PictureAndTitleScreen extends State<PictureAndTitleScreenBody> {
     }
   }
 }
+
