@@ -9,6 +9,7 @@ import 'sqflite_connection.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:image_picker/image_picker.dart';
 import './utils/drawer.dart';
+import 'package:uni_links/uni_links.dart';
 
 
 enum PlayerState { stopped, playing, paused }
@@ -56,6 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
     AudioplayerRamon.initAudioPlayer();
     gridviewthing();
     SimplePermissions.requestPermission(Permission.RecordAudio);
+
+    getLinksStream().listen((String link) {
+      if (!mounted) return;
+      print(link);
+    });
   }
   
   Widget row;

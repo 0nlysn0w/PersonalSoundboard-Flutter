@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import '../sqflite_connection.dart';
 import './content_page.dart';
 import './addgroup_page.dart';
-import '../utils/drawer.dart';
 import '../utils/group.dart';
 import '../utils/helper.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 
 class GroupPage extends StatefulWidget {
   @override
@@ -31,10 +29,6 @@ class GroupPageState extends State<GroupPage> {
     super.initState();
     group = Group("");
 
-    final FirebaseDatabase database = FirebaseDatabase.instance;
-    // groupRef = database.reference().child('group');
-    // groupRef.onChildAdded.listen(_onEntryAdded);
-    // groupRef.onChildChanged.listen(_onEntryChanged);
     getGroups();
   }
 
@@ -44,25 +38,7 @@ class GroupPageState extends State<GroupPage> {
     // return true;
     animatedListBuilder();
   }
-  _onEntryAdded(Event event) async {
-    getGroups();
-    // setState(() {
-    //   groups.add(Group.fromSnapshot(event.snapshot));
-    //   groups.removeWhere((g) => !dbGroups.contains(g));
-    // });
-  }
-    
-  // _onEntryChanged(Event event) async {
-  //   getGroups();
-  //   var old = groups.singleWhere((entry) {
-  //     return entry.key == event.snapshot.key;
-  //   });
-  //   setState(() {
-  //     groups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
-  //     groups.removeWhere((g) => !dbGroups.contains(g));
 
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
