@@ -8,6 +8,7 @@ import './content_page.dart';
 import './addgroup_page.dart';
 import '../utils/group.dart';
 import '../utils/helper.dart';
+import '../utils/drawer.dart';
 
 import 'package:firebase_database/firebase_database.dart';
 
@@ -55,7 +56,7 @@ class GroupPageState extends State<GroupPage> {
           ),
         ],
       ),
-      body: row
+      body: row,
       // new FirebaseAnimatedList(
       //   query: groupRef,
       //   itemBuilder: (BuildContext context, DataSnapshot snapshot, 
@@ -74,7 +75,7 @@ class GroupPageState extends State<GroupPage> {
       //     );
       //   }
       // ),
-      
+      drawer: new TestDrawer(),
     );
   }
   Widget row;
