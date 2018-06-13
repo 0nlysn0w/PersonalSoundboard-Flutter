@@ -115,6 +115,9 @@ class GroupPageState extends State<GroupPage> {
                 onTap: () {
                   Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(dbGroups[index]))).whenComplete(() => getGroups());
                 },
+                onLongPress: () {
+                  _dialogOptions(dbGroups[index].key);
+                },
                 leading: Helper().roundAvatar(dbGroups[index].name),
                 title: new Text(dbGroups[index].name),
               )
@@ -125,5 +128,53 @@ class GroupPageState extends State<GroupPage> {
     setState(() {
           
         });
+  }
+
+    Future<Null> _dialogOptions(String id) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          title: const Text('What would you like to do with this sound?', textAlign: TextAlign.center,),
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+            new Container(
+              padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+                  deleteGroup(id);
+                },
+                child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
+              ),
+            ),
+            new Container(
+              padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
+              child: new SimpleDialogOption(
+                onPressed: () {
+
+                },
+                child: const Icon(Icons.reply, size: 80.0, color: Colors.green,),
+              ),
+              )],
+            )
+          ],
+        );
+      }
+    );
+    setState(() { });
+
+  }
+
+  void deleteGroup(String id) async {
+    SQFLiteConnect db = new SQFLiteConnect();
+    var m = await db.deleteGroup(id);
+    if (m) {
+      getGroups();
+      Navigator.pop(context);
+    }
   }
 }
