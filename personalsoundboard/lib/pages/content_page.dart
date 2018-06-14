@@ -49,7 +49,7 @@ class ContentPageState extends State<ContentPage> {
     contentRef.onChildChanged.listen(_onEntryChanged);
   }
 
-    _onEntryAdded(Event event) {
+  _onEntryAdded(Event event) {
     setState(() {
       contents.add(Content.fromSnapshot(event.snapshot));
       contents = contents.where((c) => c.group == group.key).toList();

@@ -69,7 +69,8 @@ class AddToGroupPageState extends State<AddToGroupPage> {
   }
 
   Future<Null> uploadCover(File image, _contentKey) async {
-    final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey);
+    String fileType = image.path.split(".")[1];
+    final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey + "." + fileType);
     final StorageUploadTask task = ref.putFile(image);
     final Uri coverUrl = (await task.future).downloadUrl;
     _coverUrl = coverUrl.toString();
@@ -78,7 +79,8 @@ class AddToGroupPageState extends State<AddToGroupPage> {
   }
 
   Future<Null> uploadSound(File sound, _contentKey) async {
-    final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey);
+    String fileType = sound.path.split(".")[3];
+    final StorageReference ref = FirebaseStorage.instance.ref().child(_contentKey + "." + fileType);
     final StorageUploadTask task = ref.putFile(sound);
     final Uri soundUrl = (await task.future).downloadUrl;
     _soundUrl = soundUrl.toString();
@@ -109,19 +111,24 @@ class AddToGroupPageState extends State<AddToGroupPage> {
               child: new ListTile(
                 onTap: () async {
                   _contentKey = Helper().base62();
-                  // File file = new File(pressedContent.coverUrl);
-                  // var meep = await rootBundle.load(pressedContent.coverUrl);
-                  // var m = await file.writeAsBytes(meep.buffer.asUint8List());
 
-                  // if (pressedContent.coverUrl != null) {
-                  //   File newCover = new File(pressedContent.coverUrl);
-                  //   await uploadCover(newCover, _contentKey);
-                  // }
+                  // So if it is a local content object
+                  if (pressedContent.group == null) {
 
-                  // if (pressedContent.soundUrl != null) {
-                  //   newSound = new File(pressedContent.coverUrl);
-                  //   await uploadSound(newSound, _contentKey);
-                  // }
+                    //File file = new File(pressedContent.coverUrl);
+                    // var meep = await rootBundle.load(pressedContent.coverUrl);
+                    // var m = await file.writeAsBytes(meep.buffer.asUint8List());
+
+                    if (pressedContent.coverUrl != null) {
+                      File newCover = new File(pressedContent.coverUrl);
+                      await uploadCover(newCover, _contentKey);
+                    }
+
+                    if (pressedContent.soundUrl != null) {
+                      newSound = new File(pressedContent.soundUrl);
+                      await uploadSound(newSound, _contentKey);
+                    }
+                  }
 
                   print(dbGroups[index].key);
 
@@ -141,8 +148,8 @@ class AddToGroupPageState extends State<AddToGroupPage> {
 
   void submitRecords(String groupToAddTo, Content pressedContent) {
     content.group = groupToAddTo;
-    content.coverUrl = pressedContent.coverUrl;
-    content.soundUrl = pressedContent.soundUrl;
+    content.coverUrl = _coverUrl;
+    content.soundUrl = _soundUrl;
     content.name = pressedContent.name;
 
     contentRef.child(_contentKey).set(content.toJson());
