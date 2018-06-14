@@ -9,7 +9,11 @@ class Group {
 
   Group.fromSnapshot(DataSnapshot snapshot)
         : key = snapshot.key,
-          name = snapshot.value["name"];          
+          name = snapshot.value["name"];    
+
+  Group.fromLocalDb(dynamic localData)
+        : key = localData["id"],
+          name = localData["title"];     
           
   toJson() {
     return {
