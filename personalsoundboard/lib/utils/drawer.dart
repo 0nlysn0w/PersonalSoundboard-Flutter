@@ -30,8 +30,11 @@ class TestDrawer extends StatelessWidget {
                 ),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new MyApp()));
+                var route = Navigator.defaultRouteName;
+                print(route);
+                Navigator.of(context).popUntil(ModalRoute.withName(route));
+                // Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new MyApp()));
+
               }
             ),
             new Divider(),

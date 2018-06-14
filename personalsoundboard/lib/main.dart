@@ -75,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   StreamSubscription _sub;
   Widget row;
+  int count = 0;
   initPlatformState() async {
       await initPlatformStateForStringUniLinks();
 
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   initPlatformStateForStringUniLinks() async {
     // Attach a listener to the links stream
-    _sub = getLinksStream().listen((String link) {
+    _sub = getLinksStream().skip(count).listen((String link) {
       if (!mounted) return;
       setState(() {
         _latestLink = link ?? 'Unknown';
@@ -141,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     setState(() {
       _latestLink = initialLink;
       _latestUri = initialUri;
+      count++;
     });
   }
 
