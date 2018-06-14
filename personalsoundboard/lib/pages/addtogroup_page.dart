@@ -175,11 +175,20 @@ class AddToGroupPageState extends State<AddToGroupPage> {
   }
   void submitRecords(String groupToAddTo, Content pressedContent) {
     content.group = groupToAddTo;
-    content.coverUrl = _coverUrl;
-    content.soundUrl = _soundUrl;
-    content.name = pressedContent.name;
+    
+    if (_coverUrl == null) {
+      content.coverUrl = pressedContent.coverUrl;
+    } else {
+      content.coverUrl = _coverUrl;
+    }
 
-    print(content.group);
+    if (_soundUrl == null) {
+      content.soundUrl = pressedContent.soundUrl;
+    } else {
+      content.soundUrl = _soundUrl;
+    }
+
+    content.name = pressedContent.name;
     contentRef.child(_contentKey).set(content.toJson());
   }
   // Widget row;
