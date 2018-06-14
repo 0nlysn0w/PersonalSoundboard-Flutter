@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 class Group {
    String key;
    String name;
-   String image;
 
   Group(this.name);
 
