@@ -157,10 +157,12 @@ class AddToGroupPageState extends State<AddToGroupPage> {
                     }
                   }
 
-                  print(dbGroups[index].key);
+                  print(groups[index].key);
 
-                  submitRecords(dbGroups[index].key, pressedContent);
+                  submitRecords(groups[index].key, pressedContent);
 
+                  var route = Navigator.defaultRouteName;
+                  Navigator.of(context).popUntil(ModalRoute.withName(route));
                 },
                 leading: Helper().roundAvatar(groups[index].name),
                 title: new Text(groups[index].name),
@@ -170,6 +172,15 @@ class AddToGroupPageState extends State<AddToGroupPage> {
         }
       ),
     );
+  }
+  void submitRecords(String groupToAddTo, Content pressedContent) {
+    content.group = groupToAddTo;
+    content.coverUrl = _coverUrl;
+    content.soundUrl = _soundUrl;
+    content.name = pressedContent.name;
+
+    print(content.group);
+    contentRef.child(_contentKey).set(content.toJson());
   }
   // Widget row;
   // void animatedListBuilder() async {
@@ -220,12 +231,4 @@ class AddToGroupPageState extends State<AddToGroupPage> {
   //   });
   // }
 
-  void submitRecords(String groupToAddTo, Content pressedContent) {
-    content.group = groupToAddTo;
-    content.coverUrl = _coverUrl;
-    content.soundUrl = _soundUrl;
-    content.name = pressedContent.name;
-
-    contentRef.child(_contentKey).set(content.toJson());
-  }
 }
