@@ -34,10 +34,11 @@ class GroupPageState extends State<GroupPage> {
     group = Group("");
 
 
-    final FirebaseDatabase database = FirebaseDatabase.instance;
-    groupRef = database.reference().child('group');
-    groupRef.onChildAdded.listen(_onEntryAdded);
-    groupRef.onChildChanged.listen(_onEntryChanged);
+
+    // final FirebaseDatabase database = FirebaseDatabase.instance;
+    // groupRef = database.reference().child('group');
+    // groupRef.onChildAdded.listen(_onEntryAdded);
+    // groupRef.onChildChanged.listen(_onEntryChanged);
 
     getLocalGroups();
   }
@@ -46,31 +47,31 @@ class GroupPageState extends State<GroupPage> {
     SQFLiteConnect db = new SQFLiteConnect();
     dbGroups = await db.groups();
     // return true;
-    // animatedListBuilder();
+    animatedListBuilder();
   }
 
-  _onEntryAdded(Event event) {
-    setState(() {
-      // List<Group> unfilteredGroups = List();
-      groups.add(Group.fromSnapshot(event.snapshot));
-      // for (var dbGroup in dbGroups) {
-      //   groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
-      // }
-    });
-  }
+  // _onEntryAdded(Event event) {
+  //   setState(() {
+  //     // List<Group> unfilteredGroups = List();
+  //     groups.add(Group.fromSnapshot(event.snapshot));
+  //     // for (var dbGroup in dbGroups) {
+  //     //   groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
+  //     // }
+  //   });
+  // }
 
-  _onEntryChanged(Event event) {
-    var old = groups.singleWhere((entry) {
-      return entry.key == event.snapshot.key;
-    });
-    setState(() {
-      List<Group> unfilteredGroups = List();
-      unfilteredGroups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
-      for (var dbGroup in dbGroups) {
-        groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
-      }
-    });
-  }
+  // _onEntryChanged(Event event) {
+  //   var old = groups.singleWhere((entry) {
+  //     return entry.key == event.snapshot.key;
+  //   });
+  //   setState(() {
+  //     List<Group> unfilteredGroups = List();
+  //     unfilteredGroups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
+  //     for (var dbGroup in dbGroups) {
+  //       groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
+  //     }
+  //   });
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -86,61 +87,61 @@ class GroupPageState extends State<GroupPage> {
           ),
         ],
       ),
-      body: // Hier stond row,
-      new FirebaseAnimatedList(
-        query: groupRef,
-        itemBuilder: (BuildContext context, DataSnapshot snapshot, 
-            Animation<double> animation, int index) {
-          return new Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: new Card(
-              child: new ListTile(
-                onTap: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
-                },
-                onLongPress: () {
-                  _dialogOptions(groups[index].key, groups[index].name);
-                },
-                leading: Helper().roundAvatar(groups[index].name),
-                title: new Text(groups[index].name),
-              )
-            )
-          );
-        }
-      ),
+      body: row,
+      // new FirebaseAnimatedList(
+      //   query: groupRef,
+      //   itemBuilder: (BuildContext context, DataSnapshot snapshot, 
+      //       Animation<double> animation, int index) {
+      //     return new Container(
+      //       margin: const EdgeInsets.only(top: 5.0),
+      //       child: new Card(
+      //         child: new ListTile(
+      //           onTap: () {
+      //             Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(groups[index])));
+      //           },
+      //           onLongPress: () {
+      //             _dialogOptions(groups[index].key, groups[index].name);
+      //           },
+      //           leading: Helper().roundAvatar(groups[index].name),
+      //           title: new Text(groups[index].name),
+      //         )
+      //       )
+      //     );
+      //   }
+      // ),
       drawer: new TestDrawer(),
     );
   }
-  // Widget row;
-  // void animatedListBuilder() async {
-  //   final GlobalKey<AnimatedListState> _listKey =
-  //       new GlobalKey<AnimatedListState>();
-  //   row = new AnimatedList(
-  //     key: _listKey,
-  //     initialItemCount: dbGroups.length,
-  //     itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-  //         return new Container(
-  //           margin: const EdgeInsets.only(top: 5.0),
-  //           child: new Card(
-  //             shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-  //             child: new ListTile(
-  //               onTap: () {
-  //                 Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(dbGroups[index]))).whenComplete(() => getLocalGroups());
-  //               },
-  //               onLongPress: () {
-  //                 _dialogOptions(dbGroups[index].key, dbGroups[index].name);
-  //               },
-  //               leading: Helper().roundAvatar(dbGroups[index].name),
-  //               title: new Text(dbGroups[index].name),
-  //             )
-  //           )
-  //         );
-  //     }
-  //   );
-  //   setState(() {
+  Widget row;
+  void animatedListBuilder() async {
+    final GlobalKey<AnimatedListState> _listKey =
+        new GlobalKey<AnimatedListState>();
+    row = new AnimatedList(
+      key: _listKey,
+      initialItemCount: dbGroups.length,
+      itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+          return new Container(
+            margin: const EdgeInsets.only(top: 5.0),
+            child: new Card(
+              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+              child: new ListTile(
+                onTap: () {
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(dbGroups[index]))).whenComplete(() => getLocalGroups());
+                },
+                onLongPress: () {
+                  _dialogOptions(dbGroups[index].key, dbGroups[index].name);
+                },
+                leading: Helper().roundAvatar(dbGroups[index].name),
+                title: new Text(dbGroups[index].name),
+              )
+            )
+          );
+      }
+    );
+    setState(() {
           
-  //       });
-  // }
+        });
+  }
 
     Future<Null> _dialogOptions(String id, String name) async {
     await showDialog(

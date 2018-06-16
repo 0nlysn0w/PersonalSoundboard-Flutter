@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'audioplayer.dart';
 import 'audiorecord.dart';
@@ -134,8 +135,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       SQFLiteConnect db = new SQFLiteConnect();
       bool exists = await db.groupExists(group.key);
       if(!exists) {
-        m["name"].replaceAll(new RegExp("%20"), " ");
-        await db.addGroup(group);
+        bool isLegit = true;
+
+        var onlinegroup = groupIsLegit(group.key);
+
+        if (isLegit) {
+          m["name"].replaceAll(new RegExp("%20"), " ");
+          await db.addGroup(group);
+        }
       }
       Navigator.of(context).push( new MaterialPageRoute(builder: (context) => new ContentPage(group)));
     }
@@ -144,6 +151,39 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       _latestUri = initialUri;
       count++;
     });
+  }
+  // So if it is an actual group in the database
+  Future<Group> groupIsLegit(String id) async {
+      return FirebaseDatabase.instance
+        .reference()
+        .child("group")
+        .child(id)
+        .once()
+        .then((DataSnapshot snapshot) {
+          var onlinegroup = new Group.fromSnapshot(snapshot);
+          return onlinegroup;
+        });
+    //   groupRef.addValueEventListener(new ValueEventListener() {
+    //     @Override
+    //     public void onDataChange(DataSnapshot dataSnapshot) {
+    //       Group group = dataSnapshot.getValue(Group.class);
+    //       System.out.println(post);
+    //     }
+
+    //     //List<Group> onlineGroups = 
+
+    //   }
+
+    // Database _db = await openDatabase(await connectionstringGroup(), version: 1,
+    //   onCreate: (Database db, int version) async {
+    //     await db.execute(
+    //       onCreateGroup
+    //     );
+    //   }
+    // );
+
+    // var m = await _db.query("DBLGroups", where: "id == '" + id + "'");
+    // return m.length != 0;
   }
 
   //Dialog

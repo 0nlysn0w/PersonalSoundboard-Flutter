@@ -31,7 +31,7 @@ class AddToGroupPage extends StatefulWidget {
 }
 
 class AddToGroupPageState extends State<AddToGroupPage> {
-  AddToGroupPageState(this.pressedContent);
+
   Content pressedContent;
 
   Widget body;
@@ -53,18 +53,21 @@ class AddToGroupPageState extends State<AddToGroupPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   List<Group> dbGroups;
 
+  AddToGroupPageState(this.pressedContent) {
+    final FirebaseDatabase database = FirebaseDatabase.instance;
+    contentRef = database.reference().child('content');
+    // groupRef = database.reference().child('group');
+
+    // groupRef.onChildAdded.listen(_onEntryAdded);
+    // groupRef.onChildChanged.listen(_onEntryChanged);
+  }
+
   @override
   void initState() {
     super.initState();
     group = Group("");
     content = Content("", "", "", "");
 
-    final FirebaseDatabase database = FirebaseDatabase.instance;
-    contentRef = database.reference().child('content');
-
-    groupRef = database.reference().child('group');
-    groupRef.onChildAdded.listen(_onEntryAdded);
-    groupRef.onChildChanged.listen(_onEntryChanged);
 
     getGroups();
   }
@@ -73,31 +76,31 @@ class AddToGroupPageState extends State<AddToGroupPage> {
     SQFLiteConnect db = new SQFLiteConnect();
     dbGroups = await db.groups();
     // return true;
-    //animatedListBuilder();
+    animatedListBuilder();
   }
 
-  _onEntryAdded(Event event) {
-    setState(() {
-      // List<Group> unfilteredGroups = List();
-      groups.add(Group.fromSnapshot(event.snapshot));
-      // for (var dbGroup in dbGroups) {
-      //   groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
-      // }
-    });
-  }
+  // _onEntryAdded(Event event) {
+  //   setState(() {
+  //     // List<Group> unfilteredGroups = List();
+  //     groups.add(Group.fromSnapshot(event.snapshot));
+  //     // for (var dbGroup in dbGroups) {
+  //     //   groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
+  //     // }
+  //   });
+  // }
 
-  _onEntryChanged(Event event) {
-    var old = groups.singleWhere((entry) {
-      return entry.key == event.snapshot.key;
-    });
-    setState(() {
-      List<Group> unfilteredGroups = List();
-      unfilteredGroups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
-      for (var dbGroup in dbGroups) {
-        groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
-      }
-    });
-  }
+  // _onEntryChanged(Event event) {
+  //   var old = groups.singleWhere((entry) {
+  //     return entry.key == event.snapshot.key;
+  //   });
+  //   setState(() {
+  //     List<Group> unfilteredGroups = List();
+  //     unfilteredGroups[groups.indexOf(old)] = Group.fromSnapshot(event.snapshot);
+  //     for (var dbGroup in dbGroups) {
+  //       groups = unfilteredGroups.where((c) => c.key == dbGroup.key).toList();
+  //     }
+  //   });
+  // }
 
 
   Future<Null> uploadCover(File image, _contentKey) async {
@@ -126,25 +129,88 @@ class AddToGroupPageState extends State<AddToGroupPage> {
       appBar: new AppBar(
         title: new Text("Choose group to add to"),
       ),
-      body: // row,
-      new FirebaseAnimatedList(
-        query: groupRef,
-        itemBuilder: (BuildContext context, DataSnapshot snapshot, 
-            Animation<double> animation, int index) {
+      body: row,
+      // new FirebaseAnimatedList(
+      //   query: groupRef,
+      //   itemBuilder: (BuildContext context, DataSnapshot snapshot, 
+      //       Animation<double> animation, int index) {
+      //     return new Container(
+      //       margin: const EdgeInsets.only(top: 5.0),
+      //       child: new Card(
+      //         child: new ListTile(
+      //           onTap: () async {
+
+      //             _contentKey = Helper().base62();
+      //             // So if it is a local content object
+      //             if (pressedContent.group == null) {
+
+      //               if (pressedContent.coverUrl != null) {
+      //                 File newCover = new File(pressedContent.coverUrl);
+      //                 await uploadCover(newCover, _contentKey);
+      //               }
+
+      //               if (pressedContent.soundUrl != null) {
+      //                 newSound = new File(pressedContent.soundUrl);
+      //                 await uploadSound(newSound, _contentKey);
+      //               }
+      //             }
+
+      //             print(groups[index].key);
+
+      //             submitRecords(groups[index].key, pressedContent);
+
+      //             var route = Navigator.defaultRouteName;
+      //             Navigator.of(context).popUntil(ModalRoute.withName(route));
+      //           },
+      //           leading: Helper().roundAvatar(groups[index].name),
+      //           title: new Text(groups[index].name),
+      //         )
+      //       )
+      //     );
+      //   }
+      // ),
+    );
+  }
+  void submitRecords(String groupToAddTo, Content pressedContent) {
+    content.group = groupToAddTo;
+    
+    if (_coverUrl == null) {
+      content.coverUrl = pressedContent.coverUrl;
+    } else {
+      if (_coverUrl == null) {
+        _coverUrl = "";
+      }
+      content.coverUrl = _coverUrl;
+    }
+
+    if (_soundUrl == null) {
+      content.soundUrl = pressedContent.soundUrl;
+    } else {
+      if (_soundUrl == null) {
+        _soundUrl = "";
+      }
+      content.soundUrl = _soundUrl;
+    }
+
+    content.name = pressedContent.name;
+    contentRef.child(_contentKey).set(content.toJson());
+  }
+  Widget row;
+  void animatedListBuilder() async {
+    final GlobalKey<AnimatedListState> _listKey =
+        new GlobalKey<AnimatedListState>();
+    row = new AnimatedList(
+      key: _listKey,
+      initialItemCount: dbGroups.length,
+      itemBuilder: (BuildContext context, int index, Animation<double> animation) {
           return new Container(
             margin: const EdgeInsets.only(top: 5.0),
             child: new Card(
               child: new ListTile(
                 onTap: () async {
-
                   _contentKey = Helper().base62();
-
                   // So if it is a local content object
                   if (pressedContent.group == null) {
-
-                    //File file = new File(pressedContent.coverUrl);
-                    // var meep = await rootBundle.load(pressedContent.coverUrl);
-                    // var m = await file.writeAsBytes(meep.buffer.asUint8List());
 
                     if (pressedContent.coverUrl != null) {
                       File newCover = new File(pressedContent.coverUrl);
@@ -157,87 +223,23 @@ class AddToGroupPageState extends State<AddToGroupPage> {
                     }
                   }
 
-                  print(groups[index].key);
+                  //print(dbGroups[index].key);
 
-                  submitRecords(groups[index].key, pressedContent);
+                  submitRecords(dbGroups[index].key, pressedContent);
 
                   var route = Navigator.defaultRouteName;
-                  Navigator.of(context).popUntil(ModalRoute.withName(route));
+                  Navigator.of(context);
+
                 },
-                leading: Helper().roundAvatar(groups[index].name),
-                title: new Text(groups[index].name),
+                leading: Helper().roundAvatar(dbGroups[index].name),
+                title: new Text(dbGroups[index].name),
               )
             )
           );
-        }
-      ),
+      }
     );
+    setState(() {     
+    });
   }
-  void submitRecords(String groupToAddTo, Content pressedContent) {
-    content.group = groupToAddTo;
-    
-    if (_coverUrl == null) {
-      content.coverUrl = pressedContent.coverUrl;
-    } else {
-      content.coverUrl = _coverUrl;
-    }
-
-    if (_soundUrl == null) {
-      content.soundUrl = pressedContent.soundUrl;
-    } else {
-      content.soundUrl = _soundUrl;
-    }
-
-    content.name = pressedContent.name;
-    contentRef.child(_contentKey).set(content.toJson());
-  }
-  // Widget row;
-  // void animatedListBuilder() async {
-  //   final GlobalKey<AnimatedListState> _listKey =
-  //       new GlobalKey<AnimatedListState>();
-  //   row = new AnimatedList(
-  //     key: _listKey,
-  //     initialItemCount: dbGroups.length,
-  //     itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-  //         return new Container(
-  //           margin: const EdgeInsets.only(top: 5.0),
-  //           child: new Card(
-  //             child: new ListTile(
-  //               onTap: () async {
-  //                 _contentKey = Helper().base62();
-
-  //                 // So if it is a local content object
-  //                 if (pressedContent.group == null) {
-
-  //                   //File file = new File(pressedContent.coverUrl);
-  //                   // var meep = await rootBundle.load(pressedContent.coverUrl);
-  //                   // var m = await file.writeAsBytes(meep.buffer.asUint8List());
-
-  //                   if (pressedContent.coverUrl != null) {
-  //                     File newCover = new File(pressedContent.coverUrl);
-  //                     await uploadCover(newCover, _contentKey);
-  //                   }
-
-  //                   if (pressedContent.soundUrl != null) {
-  //                     newSound = new File(pressedContent.soundUrl);
-  //                     await uploadSound(newSound, _contentKey);
-  //                   }
-  //                 }
-
-  //                 print(dbGroups[index].key);
-
-  //                 submitRecords(dbGroups[index].key, pressedContent);
-
-  //               },
-  //               leading: Helper().roundAvatar(dbGroups[index].name),
-  //               title: new Text(dbGroups[index].name),
-  //             )
-  //           )
-  //         );
-  //     }
-  //   );
-  //   setState(() {     
-  //   });
-  // }
 
 }
