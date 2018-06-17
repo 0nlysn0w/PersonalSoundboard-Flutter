@@ -221,13 +221,16 @@ class AddToGroupPageState extends State<AddToGroupPage> {
                       newSound = new File(pressedContent.soundUrl);
                       await uploadSound(newSound, _contentKey);
                     }
+                    submitRecords(dbGroups[index].key, pressedContent);
+                    Navigator.of(context).popUntil(ModalRoute.withName(Navigator.defaultRouteName));
+                  } else {
+                    submitRecords(dbGroups[index].key, pressedContent);
+                    Navigator.pop(context);
                   }
 
                   //print(dbGroups[index].key);
 
-                  submitRecords(dbGroups[index].key, pressedContent);
-
-                  Navigator.of(context).popUntil(ModalRoute.withName(Navigator.defaultRouteName));
+                  
 
                 },
                 leading: Helper().roundAvatar(dbGroups[index].name),
