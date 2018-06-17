@@ -211,7 +211,7 @@ class AddToGroupPageState extends State<AddToGroupPage> {
                   _contentKey = Helper().base62();
                   // So if it is a local content object
                   if (pressedContent.group == null) {
-
+                    _onLoading();
                     if (pressedContent.coverUrl != null) {
                       File newCover = new File(pressedContent.coverUrl);
                       await uploadCover(newCover, _contentKey);
@@ -227,8 +227,7 @@ class AddToGroupPageState extends State<AddToGroupPage> {
 
                   submitRecords(dbGroups[index].key, pressedContent);
 
-                  var route = Navigator.defaultRouteName;
-                  Navigator.of(context);
+                  Navigator.of(context).popUntil(ModalRoute.withName(Navigator.defaultRouteName));
 
                 },
                 leading: Helper().roundAvatar(dbGroups[index].name),
@@ -240,6 +239,27 @@ class AddToGroupPageState extends State<AddToGroupPage> {
     );
     setState(() {     
     });
+  }
+
+  void _onLoading() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          
+          children: <Widget>[
+          new Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              new CircularProgressIndicator(),
+            ],
+          )
+          ]
+
+        );
+      }
+    );
   }
 
 }

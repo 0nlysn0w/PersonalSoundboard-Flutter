@@ -35,8 +35,6 @@ class ContentPageState extends State<ContentPage> {
   List<Group> dbGroups;
 
 
-
-
   DatabaseReference contentRef;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -68,11 +66,15 @@ class ContentPageState extends State<ContentPage> {
   }
 
   _deleteContent(Content contentToDelete){
-    contentRef.child(contentToDelete.key).remove();
+    // contentRef.child(contentToDelete.key).remove();
     Navigator.pop(
     context,
     new MaterialPageRoute(
         builder: (context) => new ContentPage(group)));
+    setState(() {
+    contentRef.child(contentToDelete.key).remove();
+          
+        });
   }
 
   void getGroups() async {
@@ -158,7 +160,6 @@ class ContentPageState extends State<ContentPage> {
               child: new SimpleDialogOption(
                 onPressed: () {
                   _deleteContent(pressedContent);
-                  Navigator.pop(context);
                 },
                 child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
               ),

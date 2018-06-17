@@ -11,7 +11,6 @@ class TestDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Drawer(
         child: new Container(
-          color: Colors.redAccent[100],
           child: new ListView(
           children: <Widget>[
             new DrawerHeader(
