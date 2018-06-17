@@ -250,19 +250,22 @@ class AddToGroupPageState extends State<AddToGroupPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return new SimpleDialog(
-          
+          contentPadding: new EdgeInsets.fromLTRB(0.0, 50.0, 0.0, 50.0),
+          title: const Text('Uploading your file', textAlign: TextAlign.center,),
           children: <Widget>[
-          new Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              new CircularProgressIndicator(),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              new Container(
+                padding: const EdgeInsets.fromLTRB(1.0, 0.0, 0.0, 0.0),
+                child: new CircularProgressIndicator(),
+              ),
             ],
-          )
-          ]
-
+            )
+          ],
         );
       }
     );
   }
-
 }
