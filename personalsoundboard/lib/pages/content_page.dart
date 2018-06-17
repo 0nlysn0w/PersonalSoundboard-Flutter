@@ -171,7 +171,7 @@ class ContentPageState extends State<ContentPage> {
               padding: const EdgeInsets.fromLTRB(0.0, 0.0, 1.0, 0.0),
               child: new SimpleDialogOption(
                 onPressed: ()  {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddToGroupPage(pressedContent)));              
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new AddToGroupPage(pressedContent))).whenComplete(() => Navigator.pop(context));              
                           
 
                 },
