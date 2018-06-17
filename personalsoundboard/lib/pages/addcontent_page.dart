@@ -87,7 +87,6 @@ class AddContentPageState extends State<AddContentPage> {
     content.name = contentNameController.text;
 
     contentRef.child(_contentKey).set(content.toJson());
-    
   }
 
   Future getImage() async {
@@ -136,7 +135,10 @@ class AddContentPageState extends State<AddContentPage> {
             // Create base62 key for record and filename
             _contentKey = Helper().base62();
 
-            await uploadCover(_image);
+            if (_image != null) {
+              await uploadCover(_image);
+            }
+
             submitRecords(_image,_sound);
           },
           child: new Icon(Icons.check_circle),
