@@ -72,9 +72,8 @@ class ContentPageState extends State<ContentPage> {
     new MaterialPageRoute(
         builder: (context) => new ContentPage(group)));
     setState(() {
-    contentRef.child(contentToDelete.key).remove();
-          
-        });
+      contentRef.child(contentToDelete.key).remove();  
+    });
   }
 
   void getGroups() async {
@@ -160,6 +159,10 @@ class ContentPageState extends State<ContentPage> {
               child: new SimpleDialogOption(
                 onPressed: () {
                   _deleteContent(pressedContent);
+
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new ContentPage(group)));              
                 },
                 child: const Icon(Icons.delete, size: 80.0, color: Colors.black54,),
               ),
